@@ -1,0 +1,11 @@
+{
+    "terminal.integrated.shell.windows": "C:\\Windows\\sysnative\\bash.exe",
+    "jshint.options": {"esversion": 7},
+    "terminal.integrated.fontFamily": "Inconsolata for Powerline",
+    "terminal.integrated.fontSize": 15,
+    "workbench.colorTheme": "Material Theme",
+    "workbench.iconTheme": "eq-material-theme-icons",
+    "materialTheme.fixIconsRunning": false,
+    "window.zoomLevel": 0,
+  
+}
