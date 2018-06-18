@@ -5,21 +5,19 @@ export const DemoStyleObject = CSSObject.createClass({
   name: "button",
   scope: "global",
   rules: [
+    "color: white",
     backgroundColors("green", 500),
     width.set("100%"),
     width.min("300px"),
-    width.max("800px"),
-    'color: white'
+    width.max("800px")
   ],
   media: {
     "screen and (max-width:500px)": [
-      backgroundColors("green", 500),
       width.set("50%"),
       width.min("100px"),
       width.max("300px")
     ],
     "screen and (max-width:300px)": [
-      backgroundColors("green", 500),
       width.set("10%"),
       width.min("10px"),
       width.max("30px")
@@ -38,7 +36,6 @@ CSSObject.createClass({
   ],
   media: {
     "screen and (max-width:500px)": [
-      backgroundColors("green", 500),
       width.set("50%"),
       width.min("100px"),
       width.max("300px")
