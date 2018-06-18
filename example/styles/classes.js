@@ -8,7 +8,8 @@ export const DemoStyleObject = CSSObject.createClass({
     backgroundColors("green", 500),
     width.set("100%"),
     width.min("300px"),
-    width.max("800px")
+    width.max("800px"),
+    'color: white'
   ],
   media: {
     "screen and (max-width:500px)": [
