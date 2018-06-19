@@ -17,6 +17,29 @@ var stylish = (function () {
 
   var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
 
+  var addClassToContainer = function addClassToContainer(container) {
+    return function (cssObj) {
+      container.classes[cssObj.scope].push(cssObj.className);
+      container.sheets.find(function (sheet) {
+        return sheet.id === MAIN_SHEET_ID;
+      }).sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
+      return cssObj;
+    };
+  };
+
+  var addScopeToContainer = function addScopeToContainer(container) {
+    return function (cssObj) {
+      // ensure that if the scope already exists, that there is no existing class within that scope to collide with
+      if (!container.scopes.includes(cssObj.scope)) {
+        container.scopes.push(cssObj.scope);
+        container.classes[cssObj.scope] = [];
+      } else if (container.classes[cssObj.scope].includes(cssObj.class)) {
+        throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
+      }
+      return cssObj;
+    };
+  };
+
   var classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -49,29 +72,6 @@ var stylish = (function () {
     } else {
       return Array.from(arr);
     }
-  };
-
-  var addScopeToContainer = function addScopeToContainer(container) {
-    return function (cssObj) {
-      // ensure that if the scope already exists, that there is no existing class within that scope to collide with
-      if (!container.scopes.includes(cssObj.scope)) {
-        container.scopes.push(cssObj.scope);
-        container.classes[cssObj.scope] = [];
-      } else if (container.classes[cssObj.scope].includes(cssObj.class)) {
-        throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
-      }
-      return cssObj;
-    };
-  };
-
-  var addClassToContainer = function addClassToContainer(container) {
-    return function (cssObj) {
-      container.classes[cssObj.scope].push(cssObj.className);
-      container.sheets.find(function (sheet) {
-        return sheet.id === MAIN_SHEET_ID;
-      }).sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
-      return cssObj;
-    };
   };
 
   var addMediaQueriesToContainer = function addMediaQueriesToContainer(container) {
