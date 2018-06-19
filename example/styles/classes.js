@@ -1,57 +1,36 @@
-import { CSSObject } from "../../build/index.es.js";
+import Stylish from "../../build/index.es.js";
 import { width, backgroundColors } from "./variables";
 
-export const DemoStyleObject = CSSObject.createClass({
-  name: "button",
-  scope: "global",
-  rules: [
-    "color: white",
-    backgroundColors("green", 500),
-    width.set("100%"),
-    width.min("300px"),
-    width.max("800px")
-  ],
+const base_rules = ["margin: auto", width.set("100%"), width.max("700px")];
+
+export const DemoStyleObject1 = Stylish.class({
+  name: "el1",
+  scope: "demo",
+  rules: [backgroundColors("green", 700), ...base_rules],
   media: {
-    "screen and (max-width:500px)": [
-      width.set("50%"),
-      width.min("100px"),
-      width.max("300px")
-    ],
-    "screen and (max-width:300px)": [
-      width.set("10%"),
-      width.min("10px"),
-      width.max("30px")
-    ]
+    "screen and (max-width:700px)": [backgroundColors("green", 500)],
+    "screen and (max-width:400px)": [backgroundColors("green", 300)]
   }
 });
 
-CSSObject.createClass({
-  name: "test2",
+export const DemoStyleObject2 = Stylish.class({
+  name: "el2",
   scope: "demo",
-  rules: [
-    backgroundColors("green", 500),
-    width.set("100%"),
-    width.min("300px"),
-    width.max("800px")
-  ],
+  rules: [backgroundColors("blue", 700), ...base_rules],
   media: {
-    "screen and (max-width:500px)": [
-      width.set("50%"),
-      width.min("100px"),
-      width.max("300px")
-    ]
+    "screen and (max-width:700px)": [backgroundColors("blue", 500)],
+    "screen and (max-width:400px)": [backgroundColors("blue", 300)]
   }
 });
 
-CSSObject.createClass({
-  name: "test23",
+export const DemoStyleObject3 = Stylish.class({
+  name: "el3",
   scope: "demo",
-  rules: [
-    backgroundColors("green", 500),
-    width.set("100%"),
-    width.min("300px"),
-    width.max("800px")
-  ]
+  rules: [backgroundColors("yellow", 700), ...base_rules],
+  media: {
+    "screen and (max-width:700px)": [backgroundColors("yellow", 500)],
+    "screen and (max-width:400px)": [backgroundColors("yellow", 300)]
+  }
 });
 
 /* should also allow template strings for rules

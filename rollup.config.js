@@ -4,10 +4,6 @@ import postcss from "rollup-plugin-postcss";
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 
-const globals = {
-  flow: "lodash/flow"
-};
-
 export default {
   input: "src/index.js",
   output: [

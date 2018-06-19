@@ -1,5 +1,7 @@
-import { addToScope, updateMediaQueries } from "./StylishContainer";
-import CSSObject from "./CSSObject";
+import { createClass } from "./CSSObject";
 
-export { CSSObject, addToScope, updateMediaQueries };
-export default { CSSObject, addToScope, updateMediaQueries };
+const Stylish = {
+  class: createClass
+};
+
+export default Stylish;

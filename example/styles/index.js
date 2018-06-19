@@ -1,4 +1,9 @@
-import { DemoStyleObject } from "./classes";
-import StylishAF from "../../build/index.es.js";
+import {
+  DemoStyleObject1,
+  DemoStyleObject2,
+  DemoStyleObject3
+} from "./classes";
 
-document.querySelector("#demo").classList.add(DemoStyleObject.class);
+document.querySelector("#demo1").classList.add(DemoStyleObject1.class);
+document.querySelector("#demo2").classList.add(DemoStyleObject2.class);
+document.querySelector("#demo3").classList.add(DemoStyleObject3.class);

@@ -7,7 +7,9 @@ export const width = {
 export const backgroundColors = (hue, value) => {
   const lightness = `${value / 10}%`;
   const palette = {
-    green: value => `hsla(120, 100%, ${lightness}, 1)`
+    green: value => `hsla(120, 100%, ${lightness}, 1)`,
+    blue: value => `hsla(240, 100%, ${lightness}, 1)`,
+    yellow: value => `hsla(60, 100%, ${lightness}, 1)`
   };
 
   if (
@@ -17,5 +19,5 @@ export const backgroundColors = (hue, value) => {
     console.log(Object.keys(palette), hue, value);
     throw Error("The selected collor is not within your palette.");
   }
-  return `background-color: ${palette[hue]()};`
+  return `background-color: ${palette[hue]()};`;
 };
