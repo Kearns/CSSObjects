@@ -55,13 +55,11 @@ const example = Stylish.class({
 const demoEl1 = props => <div className={example.class} />;
 ```
 
-Browser Testing: **PASSED**
-Supported Browsers: **Chrome**, **Firefox**, **Edge**, **Safari**, **IE11\***
-
+Browser Testing: **PASSED**  
+Supported Browsers: **Chrome**, **Firefox**, **Edge**, **Safari**, **IE11\***  
 _\*with babel-polyfill loaded browser side_
 
-**TODO:**
-
+**TODO:**  
 - Testing suite
 - POC Keyframes
 - Class Instances
