@@ -1,10 +1,16 @@
 <!doctype html>
 <html>
 
+<head></head>
+
 <body>
   <div id="demo1">Demo</div>
   <div id="demo2">Demo</div>
   <div id="demo3">Demo</div>
+  <script type="text/javascript">
+    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"><\/script>');
+  </script>
   <script src="./styles/index.iife.js"></script>
 </body>
 

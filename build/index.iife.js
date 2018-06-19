@@ -1,87 +1,159 @@
 var stylish = (function () {
   'use strict';
 
-  const compose = (...fns) => fns.reduceRight((prevFn, nextFn) => (...args) => nextFn(prevFn(...args)), value => value);
-
-  const MAIN_SHEET_ID = `STYLISH_MAIN_${Math.floor(Math.random() * 16)}`;
-
-  const addScopeToContainer = container => cssObj => {
-    // ensure that if the scope already exists, that there is no existing class within that scope to collide with
-    if (!container.scopes.includes(cssObj.scope)) {
-      container.scopes.push(cssObj.scope);
-      container.classes[cssObj.scope] = [];
-    } else if (container.classes[cssObj.scope].includes(cssObj.class)) {
-      throw Error(`ERROR: class "${cssObj.name}" already exists in scope "${cssObj.scope}"`);
+  var compose = function compose() {
+    for (var _len = arguments.length, fns = Array(_len), _key = 0; _key < _len; _key++) {
+      fns[_key] = arguments[_key];
     }
-    return cssObj;
-  };
 
-  const addClassToContainer = container => cssObj => {
-    container.classes[cssObj.scope].push(cssObj.className);
-
-    container.sheets.find(sheet => sheet.id === MAIN_SHEET_ID).sheet.insertRule(`.${cssObj.class} { ${cssObj.rules.join(";")} }`);
-    return cssObj;
-  };
-
-  const addMediaQueriesToContainer = container => cssObj => {
-    if (Object.keys(cssObj.media).length === 0 || cssObj.media.length === 0) {
-      return null;
-    }
-    Object.keys(cssObj.media).forEach(mediaQuery => {
-      let mediaSheet;
-
-      mediaSheet = container.sheets.find(sheet => sheet.sheet.media["mediaText"].toLowerCase().replace(/\s/g, "") === mediaQuery.toLowerCase().replace(/\s/g, ""));
-
-      if (mediaSheet === undefined) {
-        mediaSheet = document.createElement("style");
-        mediaSheet.media = mediaQuery;
-        container.sheets = [mediaSheet, ...container.sheets];
-        document.head.appendChild(mediaSheet);
-      }
-
-      mediaSheet.sheet.insertRule(`.${cssObj.class} { ${cssObj.media[mediaQuery].join(";")} }`);
+    return fns.reduceRight(function (prevFn, nextFn) {
+      return function () {
+        return nextFn(prevFn.apply(undefined, arguments));
+      };
+    }, function (value) {
+      return value;
     });
   };
 
-  const mainSheet = document.createElement("style");
+  var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
+
+  var classCallCheck = function (instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  };
+
+  var createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var toConsumableArray = function (arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  };
+
+  var addScopeToContainer = function addScopeToContainer(container) {
+    return function (cssObj) {
+      // ensure that if the scope already exists, that there is no existing class within that scope to collide with
+      if (!container.scopes.includes(cssObj.scope)) {
+        container.scopes.push(cssObj.scope);
+        container.classes[cssObj.scope] = [];
+      } else if (container.classes[cssObj.scope].includes(cssObj.class)) {
+        throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
+      }
+      return cssObj;
+    };
+  };
+
+  var addClassToContainer = function addClassToContainer(container) {
+    return function (cssObj) {
+      container.classes[cssObj.scope].push(cssObj.className);
+      console.log(container.sheets.length);
+      container.sheets.find(function (sheet) {
+        return sheet.id === MAIN_SHEET_ID;
+      }).sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
+      return cssObj;
+    };
+  };
+
+  var addMediaQueriesToContainer = function addMediaQueriesToContainer(container) {
+    return function (cssObj) {
+      if (Object.keys(cssObj.media).length === 0 || cssObj.media.length === 0) {
+        return null;
+      }
+      Object.keys(cssObj.media).forEach(function (mediaQuery) {
+        var mediaSheet = void 0;
+
+        mediaSheet = container.sheets.find(function (sheet) {
+          return sheet.sheet.media["mediaText"].toLowerCase().replace(/\s/g, "") === mediaQuery.toLowerCase().replace(/\s/g, "");
+        });
+
+        if (mediaSheet === undefined) {
+          mediaSheet = document.createElement("style");
+          mediaSheet.media = mediaQuery;
+          container.sheets = [mediaSheet].concat(toConsumableArray(container.sheets));
+          document.head.appendChild(mediaSheet);
+        }
+
+        mediaSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.media[mediaQuery].join(";") + " }", 0);
+      });
+    };
+  };
+
+  var mainSheet = document.createElement("style");
   mainSheet.id = MAIN_SHEET_ID;
   document.head.appendChild(mainSheet);
 
-  const Container = {
+  var Container = {
     sheets: [mainSheet],
     scopes: [],
     classes: {}
   };
 
-  Container.pushClassObject = cssObj => compose(addMediaQueriesToContainer(Container), addClassToContainer(Container), addScopeToContainer(Container))(cssObj);
+  Container.pushClassObject = function (cssObj) {
+    return compose(addMediaQueriesToContainer(Container), addClassToContainer(Container), addScopeToContainer(Container))(cssObj);
+  };
 
   // TODO: Allow single instances of classes that can be manipulated separate from main class ie (class = demo__class, instance = demo__class--eoj2is23)
-  class CSSObject {
-    constructor({ name, rules, scope, media = {} }) {
+
+  var CSSObject = function () {
+    function CSSObject(_ref) {
+      var name = _ref.name,
+          rules = _ref.rules,
+          scope = _ref.scope,
+          _ref$media = _ref.media,
+          media = _ref$media === undefined ? {} : _ref$media;
+      classCallCheck(this, CSSObject);
+
       this.name = name;
       this.rules = rules;
       this.media = media;
       // when setting rules, should check if it is array or string and convert to array for easy value replacement
       this.scope = scope;
-      this.class = scope ? `${scope}__${name}` : name;
+      this.class = scope ? scope + "__" + name : name;
       Container.pushClassObject({
         class: this.class,
-        name,
-        rules,
-        media,
-        scope
+        name: name,
+        rules: rules,
+        media: media,
+        scope: scope
       });
     }
 
-    add(rule) {
-      this.rules = Array.isArray(rule) ? [...this.rules, ...rule] : [...this.rules, rule];
-    }
-  }
+    createClass(CSSObject, [{
+      key: "add",
+      value: function add(rule) {
+        this.rules = Array.isArray(rule) ? [].concat(toConsumableArray(this.rules), toConsumableArray(rule)) : [].concat(toConsumableArray(this.rules), [rule]);
+      }
+    }]);
+    return CSSObject;
+  }();
 
-  const createClass = args => new CSSObject(args);
+  var createClass$1 = function createClass$$1(args) {
+    return new CSSObject(args);
+  };
 
-  const Stylish = {
-    class: createClass
+  var Stylish = {
+    class: createClass$1
   };
 
   return Stylish;

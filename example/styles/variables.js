@@ -16,7 +16,6 @@ export const backgroundColors = (hue, value) => {
     !Object.keys(palette).includes(hue) ||
     ![100, 200, 300, 400, 500, 600, 700, 800, 900].includes(value)
   ) {
-    console.log(Object.keys(palette), hue, value);
     throw Error("The selected collor is not within your palette.");
   }
   return `background-color: ${palette[hue]()};`;
