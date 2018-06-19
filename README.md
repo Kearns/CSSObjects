@@ -22,11 +22,10 @@ const width = {
 };
 
 const backgroundColors = (hue, value) => {
-    const lightness = `${value / 10}%`;
     const palette = {
-      green: value => `hsla(120, 100%, ${lightness}%, 1)`,
-      blue: value => `hsla(240, 100%, ${lightness}, 1)`,
-      yellow: value => `hsla(60, 100%, ${lightness}, 1)`
+      green: value => `hsla(120, 100%, ${value / 10}%, 1)`,
+      blue: value => `hsla(240, 100%, ${value / 10}%, 1)`,
+      yellow: value => `hsla(60, 100%, ${value / 10}%, 1)`
     };
 
     if (
@@ -35,7 +34,7 @@ const backgroundColors = (hue, value) => {
     ) {
       throw Error("The selected collor is not within your palette.");
     }
-    return `background-color: ${palette[hue]()};`;
+    return `background-color: ${palette[hue](value)};`;
   };
 
 const base_rules = ["margin: auto", width.set("100%"), width.max("700px")];
@@ -59,7 +58,8 @@ Browser Testing: **PASSED**
 Supported Browsers: **Chrome**, **Firefox**, **Edge**, **Safari**, **IE11\***  
 _\*with babel-polyfill loaded browser side_
 
-**TODO:**  
+**TODO:**
+
 - Testing suite
 - POC Keyframes
 - Class Instances

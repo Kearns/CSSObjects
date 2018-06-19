@@ -67,7 +67,6 @@ var stylish = (function () {
   var addClassToContainer = function addClassToContainer(container) {
     return function (cssObj) {
       container.classes[cssObj.scope].push(cssObj.className);
-      console.log(container.sheets.length);
       container.sheets.find(function (sheet) {
         return sheet.id === MAIN_SHEET_ID;
       }).sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);

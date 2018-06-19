@@ -15,7 +15,6 @@ export const addScopeToContainer = container => cssObj => {
 
 export const addClassToContainer = container => cssObj => {
   container.classes[cssObj.scope].push(cssObj.className);
-  console.log(container.sheets.length);
   container.sheets
     .find(sheet => sheet.id === MAIN_SHEET_ID)
     .sheet.insertRule(`.${cssObj.class} { ${cssObj.rules.join(";")} }`, 0);

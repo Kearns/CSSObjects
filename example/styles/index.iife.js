@@ -67,7 +67,6 @@
   var addClassToContainer = function addClassToContainer(container) {
     return function (cssObj) {
       container.classes[cssObj.scope].push(cssObj.className);
-      console.log(container.sheets.length);
       container.sheets.find(function (sheet) {
         return sheet.id === MAIN_SHEET_ID;
       }).sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
@@ -169,23 +168,22 @@
   };
 
   var backgroundColors = function backgroundColors(hue, value) {
-    var lightness = value / 10 + "%";
     var palette = {
       green: function green(value) {
-        return "hsla(120, 100%, " + lightness + ", 1)";
+        return "hsla(120, 100%, " + value / 10 + "%, 1)";
       },
       blue: function blue(value) {
-        return "hsla(240, 100%, " + lightness + ", 1)";
+        return "hsla(240, 100%, " + value / 10 + "%, 1)";
       },
       yellow: function yellow(value) {
-        return "hsla(60, 100%, " + lightness + ", 1)";
+        return "hsla(60, 100%, " + value / 10 + "%, 1)";
       }
     };
 
     if (!Object.keys(palette).includes(hue) || ![100, 200, 300, 400, 500, 600, 700, 800, 900].includes(value)) {
       throw Error("The selected collor is not within your palette.");
     }
-    return "background-color: " + palette[hue]() + ";";
+    return "background-color: " + palette[hue](value) + ";";
   };
 
   var base_rules = ["margin: auto", width.set("100%"), width.max("700px")];
