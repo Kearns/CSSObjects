@@ -1,3 +1,9 @@
+/**
+ * adds media queries to container
+ * @param {Object} container
+ * @param {Object} cssObj
+ *
+ */
 const addMediaQueriesToContainer = container => cssObj => {
   if (Object.keys(cssObj.media).length === 0 || cssObj.media.length === 0) {
     return null;

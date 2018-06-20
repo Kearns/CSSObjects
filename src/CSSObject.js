@@ -25,4 +25,5 @@ class CSSObject {
   }
 }
 
+console.log(Container.sheets);
 export const createClass = args => new CSSObject(args);

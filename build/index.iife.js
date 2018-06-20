@@ -17,29 +17,6 @@ var stylish = (function () {
 
   var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
 
-  var addClassToContainer = function addClassToContainer(container) {
-    return function (cssObj) {
-      container.classes[cssObj.scope].push(cssObj.className);
-      container.sheets.find(function (sheet) {
-        return sheet.id === MAIN_SHEET_ID;
-      }).sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
-      return cssObj;
-    };
-  };
-
-  var addScopeToContainer = function addScopeToContainer(container) {
-    return function (cssObj) {
-      // ensure that if the scope already exists, that there is no existing class within that scope to collide with
-      if (!container.scopes.includes(cssObj.scope)) {
-        container.scopes.push(cssObj.scope);
-        container.classes[cssObj.scope] = [];
-      } else if (container.classes[cssObj.scope].includes(cssObj.class)) {
-        throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
-      }
-      return cssObj;
-    };
-  };
-
   var classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -74,6 +51,50 @@ var stylish = (function () {
     }
   };
 
+  /**
+   * adds class to container
+   * @param {Object} container
+   * @param {Object} cssObj
+   *
+   */
+  var addClassToContainer = function addClassToContainer(container) {
+    return function (cssObj) {
+      // ensure that if the scope already exists, that there is no existing class within that scope to collide with
+      if (container.classes[cssObj.scope].includes(cssObj.class)) {
+        throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
+      }
+
+      container.classes[cssObj.scope] = [].concat(toConsumableArray(container.classes[cssObj.scope]), [cssObj.className]);
+      container.sheets.find(function (sheet) {
+        return sheet.id === MAIN_SHEET_ID;
+      }).sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
+      return cssObj;
+    };
+  };
+
+  /**
+   * adds scope to container
+   * @param {Object} container
+   * @param {Object} cssObj
+   *
+   */
+
+  var addScopeToContainer = function addScopeToContainer(container) {
+    return function (cssObj) {
+      if (!container.scopes.includes(cssObj.scope)) {
+        container.scopes.push(cssObj.scope);
+        container.classes[cssObj.scope] = [];
+      }
+      return cssObj;
+    };
+  };
+
+  /**
+   * adds media queries to container
+   * @param {Object} container
+   * @param {Object} cssObj
+   *
+   */
   var addMediaQueriesToContainer = function addMediaQueriesToContainer(container) {
     return function (cssObj) {
       if (Object.keys(cssObj.media).length === 0 || cssObj.media.length === 0) {
@@ -147,6 +168,7 @@ var stylish = (function () {
     return CSSObject;
   }();
 
+  console.log(Container.sheets);
   var createClass$1 = function createClass$$1(args) {
     return new CSSObject(args);
   };
