@@ -18,12 +18,11 @@ class CSSObject {
     });
   }
 
-  add(rule) {
-    this.rules = Array.isArray(rule)
-      ? [...this.rules, ...rule]
-      : [...this.rules, rule];
+  update({ rules, media }) {
+    this.rules = rules;
+    this.media = media;
+    Container.updateClassObject(this);
   }
 }
 
-console.log(Container.sheets);
 export const createClass = args => new CSSObject(args);

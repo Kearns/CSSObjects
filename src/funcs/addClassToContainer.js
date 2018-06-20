@@ -13,14 +13,16 @@ const addClassToContainer = container => cssObj => {
       `ERROR: class "${cssObj.name}" already exists in scope "${cssObj.scope}"`
     );
   }
-
   container.classes[cssObj.scope] = [
     ...container.classes[cssObj.scope],
     cssObj.className
   ];
-  container.sheets
-    .find(sheet => sheet.id === MAIN_SHEET_ID)
-    .sheet.insertRule(`.${cssObj.class} { ${cssObj.rules.join(";")} }`, 0);
+  const mainSheet = container.sheets.find(sheet => sheet.id === MAIN_SHEET_ID)
+    .sheet;
+  mainSheet.deleteRule(
+    mainSheet.rules.findIndex(rule.selectorText === cssObj.class)
+  );
+  mainSheet.insertRule(`.${cssObj.class} { ${cssObj.rules.join(";")} }`, 0);
   return cssObj;
 };
 

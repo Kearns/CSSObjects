@@ -3,7 +3,8 @@ import { MAIN_SHEET_ID } from "./constants";
 import {
   addClassToContainer,
   addScopeToContainer,
-  addMediaQueriesToContainer
+  addMediaQueriesToContainer,
+  updateClassToContainer
 } from "./funcs";
 
 const mainSheet = document.createElement("style");
@@ -22,5 +23,8 @@ Container.pushClassObject = cssObj =>
     addClassToContainer(Container),
     addScopeToContainer(Container)
   )(cssObj);
+
+Container.updateClassObject = cssObj =>
+  compose(updateClassToContainer(Container))(cssObj);
 
 export default Container;

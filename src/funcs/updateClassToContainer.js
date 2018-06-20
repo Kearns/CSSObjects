@@ -6,7 +6,7 @@ import { MAIN_SHEET_ID } from "../constants";
  * @param {Object} cssObj
  *
  */
-const updateClass = container => cssObj => {
+const updateClassToContainer = container => cssObj => {
   container.classes[cssObj.scope] = [
     ...container.classes[cssObj.scope],
     cssObj.className
@@ -17,4 +17,4 @@ const updateClass = container => cssObj => {
   return cssObj;
 };
 
-export default addClassToContainer;
+export default updateClassToContainer;
