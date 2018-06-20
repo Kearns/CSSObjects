@@ -63,11 +63,15 @@ var stylish = (function () {
       if (container.classes[cssObj.scope].includes(cssObj.class)) {
         throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
       }
-
       container.classes[cssObj.scope] = [].concat(toConsumableArray(container.classes[cssObj.scope]), [cssObj.className]);
-      container.sheets.find(function (sheet) {
+      var mainSheet = container.sheets.find(function (sheet) {
         return sheet.id === MAIN_SHEET_ID;
-      }).sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
+      });
+      if (Array.isArray(cssObj.rules)) {
+        mainSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
+      } else if (typeof cssObj.rules === "string") {
+        mainSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.rules + " }", 0);
+      }
       return cssObj;
     };
   };
@@ -114,8 +118,34 @@ var stylish = (function () {
           document.head.appendChild(mediaSheet);
         }
 
-        mediaSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.media[mediaQuery].join(";") + " }", 0);
+        if (Array.isArray(cssObj.media[mediaQuery])) {
+          mediaSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.media[mediaQuery].join(";"), 0);
+        } else if (typeof cssObj.media[mediaQuery] === "string") {
+          mediaSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.media[mediaQuery] + " }", 0);
+        }
       });
+    };
+  };
+
+  /**
+   * adds class to container
+   * @param {Object} container
+   * @param {Object} cssObj
+   *
+   */
+  var updateClassToContainer = function updateClassToContainer(container) {
+    return function (cssObj) {
+      var mainSheet = container.sheets.find(function (sheet) {
+        return sheet.id === MAIN_SHEET_ID;
+      }).sheet;
+
+      var index = -1;
+      index = Object.values(mainSheet.rules).findIndex(function (rule) {
+        return rule.selectorText === "." + cssObj.class;
+      });
+      mainSheet.deleteRule(index);
+      mainSheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", mainSheet.rules.length);
+      return cssObj;
     };
   };
 
@@ -133,6 +163,10 @@ var stylish = (function () {
     return compose(addMediaQueriesToContainer(Container), addClassToContainer(Container), addScopeToContainer(Container))(cssObj);
   };
 
+  Container.updateClassObject = function (cssObj) {
+    return compose(updateClassToContainer(Container))(cssObj);
+  };
+
   // TODO: Allow single instances of classes that can be manipulated separate from main class ie (class = demo__class, instance = demo__class--eoj2is23)
 
   var CSSObject = function () {
@@ -145,7 +179,7 @@ var stylish = (function () {
       classCallCheck(this, CSSObject);
 
       this.name = name;
-      this.rules = rules;
+      this._rules = rules;
       this.media = media;
       // when setting rules, should check if it is array or string and convert to array for easy value replacement
       this.scope = scope;
@@ -160,15 +194,49 @@ var stylish = (function () {
     }
 
     createClass(CSSObject, [{
-      key: "add",
-      value: function add(rule) {
-        this.rules = Array.isArray(rule) ? [].concat(toConsumableArray(this.rules), toConsumableArray(rule)) : [].concat(toConsumableArray(this.rules), [rule]);
+      key: "update",
+      value: function update(_ref2) {
+        var rules = _ref2.rules,
+            media = _ref2.media;
+
+        this.rules = rules;
+        this.media = media;
+        Container.updateClassObject(this);
+      }
+    }, {
+      key: "rules",
+      set: function set$$1(rules) {
+        var usedRules = this._rules.map(function (rule) {
+          return rule.split(":")[0];
+        });
+
+        var newRules = rules.filter(function (rule) {
+          var ruleType = rule.split(":")[0];
+          if (usedRules.includes(ruleType)) {
+
+            return rule;
+          }
+
+          return rule;
+        });
+        //   const ruleName = ruleToFilter.split(":")[0];
+        //   console.log(usedRules,ruleToFilter)
+        //   if (usedRules.includes(ruleName)) {
+
+        //     return false;
+        //   }
+        //   usedRules.push(ruleName);
+        //   return true;
+        // });
+        this._rules = newRules;
+      },
+      get: function get$$1() {
+        return this._rules;
       }
     }]);
     return CSSObject;
   }();
 
-  console.log(Container.sheets);
   var createClass$1 = function createClass$$1(args) {
     return new CSSObject(args);
   };

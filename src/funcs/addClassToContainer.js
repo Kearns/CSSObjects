@@ -17,12 +17,15 @@ const addClassToContainer = container => cssObj => {
     ...container.classes[cssObj.scope],
     cssObj.className
   ];
-  const mainSheet = container.sheets.find(sheet => sheet.id === MAIN_SHEET_ID)
-    .sheet;
-  mainSheet.deleteRule(
-    mainSheet.rules.findIndex(rule.selectorText === cssObj.class)
-  );
-  mainSheet.insertRule(`.${cssObj.class} { ${cssObj.rules.join(";")} }`, 0);
+  const mainSheet = container.sheets.find(sheet => sheet.id === MAIN_SHEET_ID);
+  if (Array.isArray(cssObj.rules)) {
+    mainSheet.sheet.insertRule(
+      `.${cssObj.class} { ${cssObj.rules.join(";")} }`,
+      0
+    );
+  } else if (typeof cssObj.rules === "string") {
+    mainSheet.sheet.insertRule(`.${cssObj.class} { ${cssObj.rules} }`, 0);
+  }
   return cssObj;
 };
 

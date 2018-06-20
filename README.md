@@ -50,6 +50,24 @@ const example = Stylish.class({
   }
 });
 
+//  Class rules and media rules can be defined via strings as well
+
+export const DemoStyleObject3 = Stylish.class({
+  name: "el3",
+  scope: "demo",
+  rules: `
+    margin: auto;
+    ${width.set("100%")};
+    ${width.max("700px")};
+    ${backgroundColors("yellow", 700)};
+    `,
+  media: {
+    "screen and (max-width:700px)": `${backgroundColors("yellow", 500)};`,
+    "screen and (max-width:400px)": `${backgroundColors("yellow", 300)};`
+  }
+});
+
+
 //React example
 const demoEl1 = props => <div className={example.class} />;
 ```

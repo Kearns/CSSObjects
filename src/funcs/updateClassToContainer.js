@@ -7,13 +7,18 @@ import { MAIN_SHEET_ID } from "../constants";
  *
  */
 const updateClassToContainer = container => cssObj => {
-  container.classes[cssObj.scope] = [
-    ...container.classes[cssObj.scope],
-    cssObj.className
-  ];
-  container.sheets
-    .find(sheet => sheet.id === MAIN_SHEET_ID)
-    .sheet.insertRule(`.${cssObj.class} { ${cssObj.rules.join(";")} }`, 0);
+  const mainSheet = container.sheets.find(sheet => sheet.id === MAIN_SHEET_ID)
+    .sheet;
+
+  let index = -1;
+  index = Object.values(mainSheet.rules).findIndex(
+    rule => rule.selectorText === "." + cssObj.class
+  );
+  mainSheet.deleteRule(index);
+  mainSheet.insertRule(
+    `.${cssObj.class} { ${cssObj.rules.join(";")} }`,
+    mainSheet.rules.length
+  );
   return cssObj;
 };
 

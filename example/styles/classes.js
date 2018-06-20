@@ -26,10 +26,15 @@ export const DemoStyleObject2 = Stylish.class({
 export const DemoStyleObject3 = Stylish.class({
   name: "el3",
   scope: "demo",
-  rules: [backgroundColors("yellow", 700), ...base_rules],
+  rules: `
+    margin: auto; 
+    ${width.set("100%")}; 
+    ${width.max("700px")};
+    ${backgroundColors("yellow", 700)};
+    `,
   media: {
-    "screen and (max-width:700px)": [backgroundColors("yellow", 500)],
-    "screen and (max-width:400px)": [backgroundColors("yellow", 300)]
+    "screen and (max-width:700px)": `${backgroundColors("yellow", 500)};`,
+    "screen and (max-width:400px)": `${backgroundColors("yellow", 300)};`
   }
 });
 
