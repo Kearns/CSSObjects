@@ -24,7 +24,25 @@ const addClassToContainer = container => cssObj => {
       0
     );
   } else if (typeof cssObj.rules === "string") {
-    mainSheet.sheet.insertRule(`.${cssObj.class} { ${cssObj.rules} }`, 0);
+    mainSheet.sheet.insertRule(
+      `.${cssObj.class} {
+        ${cssObj.rules}
+    }`,
+      0
+    );
+  } else if (typeof cssObj.rules === "object") {
+    console.log(`.${cssObj.class} { 
+          ${Object.keys(cssObj.rules)
+            .map(key => `${key}: ${cssObj.rules[key]}`)
+            .join(";")}
+        }`);
+    mainSheet.sheet.insertRule(
+      `.${cssObj.class} { 
+          ${Object.keys(cssObj.rules)
+            .map(key => `${key}: ${cssObj.rules[key]}`)
+            .join(";")}
+        }`
+    );
   }
   return cssObj;
 };

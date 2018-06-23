@@ -31,7 +31,9 @@ const addMediaQueriesToContainer = container => cssObj => {
       );
     } else if (typeof cssObj.media[mediaQuery] === "string") {
       mediaSheet.sheet.insertRule(
-        `.${cssObj.class} { ${cssObj.media[mediaQuery]} }`,
+        `.${cssObj.class} {
+            ${cssObj.media[mediaQuery]}
+        }`,
         0
       );
     }

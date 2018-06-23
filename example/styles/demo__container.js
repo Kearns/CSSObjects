@@ -1,20 +1,21 @@
 import Stylish from "../../build/index.es.js";
 import { colors } from "./variables/colors";
-import { col } from "./variables/grid";
+import { grid } from "./variables/grid";
 
-const name = "el";
+const name = "container";
 const scope = "demo";
 
 const rules = `
-    background: ${colors("blue", 700)};
-    ${col(5)}
+    background: ${colors("yellow", 700)};
+    ${grid}
 `;
+
 const media = {
   "screen and (max-width:700px)": `
-    background: ${colors("blue", 500)}
+    background: ${colors("yellow", 500)};
   `,
   "screen and (max-width:400px)": `
-    background: ${colors("blue", 300)};
+    background: ${colors("yellow", 300)};
   `
 };
 

@@ -16,6 +16,12 @@ var compose = function compose() {
 
 var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -69,7 +75,14 @@ var addClassToContainer = function addClassToContainer(container) {
     if (Array.isArray(cssObj.rules)) {
       mainSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
     } else if (typeof cssObj.rules === "string") {
-      mainSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.rules + " }", 0);
+      mainSheet.sheet.insertRule("." + cssObj.class + " {\n        " + cssObj.rules + "\n    }", 0);
+    } else if (_typeof(cssObj.rules) === "object") {
+      console.log("." + cssObj.class + " { \n          " + Object.keys(cssObj.rules).map(function (key) {
+        return key + ": " + cssObj.rules[key];
+      }).join(";") + "\n        }");
+      mainSheet.sheet.insertRule("." + cssObj.class + " { \n          " + Object.keys(cssObj.rules).map(function (key) {
+        return key + ": " + cssObj.rules[key];
+      }).join(";") + "\n        }");
     }
     return cssObj;
   };
@@ -120,7 +133,7 @@ var addMediaQueriesToContainer = function addMediaQueriesToContainer(container) 
       if (Array.isArray(cssObj.media[mediaQuery])) {
         mediaSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.media[mediaQuery].join(";"), 0);
       } else if (typeof cssObj.media[mediaQuery] === "string") {
-        mediaSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.media[mediaQuery] + " }", 0);
+        mediaSheet.sheet.insertRule("." + cssObj.class + " {\n            " + cssObj.media[mediaQuery] + "\n        }", 0);
       }
     });
   };
@@ -178,7 +191,7 @@ var CSSObject = function () {
     classCallCheck(this, CSSObject);
 
     this.name = name;
-    this._rules = rules;
+    this.rules = rules;
     this.media = media;
     // when setting rules, should check if it is array or string and convert to array for easy value replacement
     this.scope = scope;
@@ -190,6 +203,7 @@ var CSSObject = function () {
       media: media,
       scope: scope
     });
+    return this.class;
   }
 
   createClass(CSSObject, [{
@@ -201,36 +215,6 @@ var CSSObject = function () {
       this.rules = rules;
       this.media = media;
       Container.updateClassObject(this);
-    }
-  }, {
-    key: "rules",
-    set: function set$$1(rules) {
-      var usedRules = this._rules.map(function (rule) {
-        return rule.split(":")[0];
-      });
-
-      var newRules = rules.filter(function (rule) {
-        var ruleType = rule.split(":")[0];
-        if (usedRules.includes(ruleType)) {
-
-          return rule;
-        }
-
-        return rule;
-      });
-      //   const ruleName = ruleToFilter.split(":")[0];
-      //   console.log(usedRules,ruleToFilter)
-      //   if (usedRules.includes(ruleName)) {
-
-      //     return false;
-      //   }
-      //   usedRules.push(ruleName);
-      //   return true;
-      // });
-      this._rules = newRules;
-    },
-    get: function get$$1() {
-      return this._rules;
     }
   }]);
   return CSSObject;
