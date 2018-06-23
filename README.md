@@ -25,12 +25,12 @@ export default Stylish.class({
         ${col(5)}
     `,
     media: {
-    "screen and (max-width:700px)": `
-        background: ${colors("blue", 500)}
-    `,
-    "screen and (max-width:400px)": `
-        background: ${colors("blue", 300)};
-    `
+        "screen and (max-width:700px)": `
+            background: ${colors("blue", 500)}
+        `,
+        "screen and (max-width:400px)": `
+            background: ${colors("blue", 300)};
+        `
     }
 });
 
