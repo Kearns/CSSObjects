@@ -14,62 +14,32 @@ The class interface allows us to define scoped classes. If another class with th
 - `media`: Takes an object with key value pairs where the key is your media query and the value is an array of style rules.
 
 ```JS
-// example style functions
-const width = {
-  set: val => `width: ${val}`,
-  min: val => `min-width: ${val}`,
-  max: val => `max-width: ${val}`
+import Stylish from "../../build/index.es.js";
+import { colors } from "./variables/colors";
+import { col } from "./variables/grid";
+
+const name = "example";
+const scope = "demo";
+
+const rules = `
+    background: ${colors("blue", 700)};
+    ${col(5)}
+`;
+const media = {
+  "screen and (max-width:700px)": `
+    background: ${colors("blue", 500)}
+  `,
+  "screen and (max-width:400px)": `
+    background: ${colors("blue", 300)};
+  `
 };
 
-const backgroundColors = (hue, value) => {
-    const palette = {
-      green: value => `hsla(120, 100%, ${value / 10}%, 1)`,
-      blue: value => `hsla(240, 100%, ${value / 10}%, 1)`,
-      yellow: value => `hsla(60, 100%, ${value / 10}%, 1)`
-    };
-
-    if (
-      !Object.keys(palette).includes(hue) ||
-      ![100, 200, 300, 400, 500, 600, 700, 800, 900].includes(value)
-    ) {
-      throw Error("The selected collor is not within your palette.");
-    }
-    return `background-color: ${palette[hue](value)};`;
-  };
-
-const base_rules = ["margin: auto", width.set("100%"), width.max("700px")];
-
-// Class definition
-const example = Stylish.class({
-  name: "el1",
-  scope: "demo",
-  rules: [backgroundColors("green", 700), ...base_rules],
-  media: {
-    "screen and (max-width:700px)": [backgroundColors("green", 500)],
-    "screen and (max-width:400px)": [backgroundColors("green", 300)]
-  }
-});
-
-//  Class rules and media rules can be defined via strings as well
-
-export const DemoStyleObject3 = Stylish.class({
-  name: "el3",
-  scope: "demo",
-  rules: `
-    margin: auto;
-    ${width.set("100%")};
-    ${width.max("700px")};
-    ${backgroundColors("yellow", 700)};
-    `,
-  media: {
-    "screen and (max-width:700px)": `${backgroundColors("yellow", 500)};`,
-    "screen and (max-width:400px)": `${backgroundColors("yellow", 300)};`
-  }
-});
-
+export default Stylish.class({ name, scope, rules, media });
 
 //React example
+import { example } from './styles';
 const demoEl1 = props => <div className={example.class} />;
+// output: <div class="demo__example"></div>
 ```
 
 Browser Testing: **PASSED**  
