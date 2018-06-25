@@ -245,7 +245,7 @@
 
   var padded = "\n    width: 80%;\n    padding: 10%;\n";
 
-  var grid = "\n    display: flex;\n    flex-direction: column;\n    max-width: 700px;\n    margin: 0 auto;\n    " + padded + "\n";
+  var grid = "\n    display: flex;\n    flex-direction: column;\n   \n";
 
   var row = "\n    justify-content: space-around;\n    display: flex;\n    flex-direction: row;\n    " + padded + "\n";
 
@@ -273,12 +273,12 @@
     "screen and (max-width:400px)": "background: " + colors("green", 300) + ";"
   };
 
-  Stylish.class({ name: name$1, scope: scope$1, rules: rules$1, media: media$1 });
+  var demo__row = Stylish.class({ name: name$1, scope: scope$1, rules: rules$1, media: media$1 });
 
   var name$2 = "container";
   var scope$2 = "demo";
 
-  var rules$2 = "\n    background-color: " + colors("yellow", 700) + ";\n    " + grid + "\n";
+  var rules$2 = "\n    height: 100vh;\n    width: 100vw;\n    justify-content: center;\n    padding: 0;\n    margin: 0;\n    overflow: hidden;\n    background-color: " + colors("yellow", 700) + ";\n    " + grid + "\n";
 
   var media$2 = {
     "screen and (max-width:700px)": "\n    background: " + colors("yellow", 500) + ";\n  ",
@@ -296,7 +296,20 @@
       increment ? ++opacity : --opacity;
       if (opacity >= 99) increment = false;
       if (opacity <= 10) increment = true;
-      demo__el.rules = "\n    " + baseRules + "\n    opacity: ." + opacity + ";\n    ";
+      demo__el.rules = "\n      " + baseRules + "\n      opacity: ." + opacity + ";\n      ";
+      window.requestAnimationFrame(step);
+    }
+    window.requestAnimationFrame(step);
+  };
+
+  var updateBorderRadius = function updateBorderRadius() {
+    var baseRules = demo__row.rules;
+    var radius = 0;
+
+    function step() {
+      radius = radius === 359 ? 0 : radius + 1;
+
+      demo__row.rules = "\n    " + baseRules + "\n    transform: rotate3d(1, 2.0, 3.0, " + radius + "deg);\n    ";
       window.requestAnimationFrame(step);
     }
     window.requestAnimationFrame(step);
@@ -313,7 +326,6 @@
         increment[i] ? ++color : --color;
         if (color >= 255) increment[i] = false;
         if (color <= 0) increment[i] = true;
-        console.log(color);
         return color;
       });
 
@@ -325,5 +337,6 @@
 
   updateOpacity();
   updateColors();
+  updateBorderRadius();
 
 }());

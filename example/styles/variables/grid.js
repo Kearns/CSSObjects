@@ -6,9 +6,7 @@ const padded = `
 export const grid = `
     display: flex;
     flex-direction: column;
-    max-width: 700px;
-    margin: 0 auto;
-    ${padded}
+   
 `;
 
 export const row = `

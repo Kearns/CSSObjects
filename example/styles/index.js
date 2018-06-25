@@ -12,8 +12,25 @@ const updateOpacity = () => {
     if (opacity >= 99) increment = false;
     if (opacity <= 10) increment = true;
     demo__el.rules = `
+      ${baseRules}
+      opacity: .${opacity};
+      `;
+    window.requestAnimationFrame(step);
+  }
+  window.requestAnimationFrame(step);
+};
+
+const updateBorderRadius = () => {
+  const baseRules = demo__row.rules;
+  let radius = 0;
+  let increment = true;
+
+  function step() {
+    radius = radius === 359 ? 0 : radius + 1;
+    
+    demo__row.rules = `
     ${baseRules}
-    opacity: .${opacity};
+    transform: rotate3d(1, 2.0, 3.0, ${radius}deg);
     `;
     window.requestAnimationFrame(step);
   }
@@ -35,7 +52,6 @@ const updateColors = () => {
       increment[i] ? ++color : --color;
       if (color >= 255) increment[i] = false;
       if (color <= 0) increment[i] = true;
-      console.log(color);
       return color;
     });
 
@@ -50,3 +66,4 @@ const updateColors = () => {
 
 updateOpacity();
 updateColors();
+updateBorderRadius()

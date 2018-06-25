@@ -6,6 +6,12 @@ const name = "container";
 const scope = "demo";
 
 const rules = `
+    height: 100vh;
+    width: 100vw;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
     background-color: ${colors("yellow", 700)};
     ${grid}
 `;
