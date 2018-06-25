@@ -278,31 +278,52 @@
   var name$2 = "container";
   var scope$2 = "demo";
 
-  var rules$2 = "\n    background: " + colors("yellow", 700) + ";\n    " + grid + "\n";
+  var rules$2 = "\n    background-color: " + colors("yellow", 700) + ";\n    " + grid + "\n";
 
   var media$2 = {
     "screen and (max-width:700px)": "\n    background: " + colors("yellow", 500) + ";\n  ",
     "screen and (max-width:400px)": "\n    background: " + colors("yellow", 300) + ";\n  "
   };
 
-  Stylish.class({ name: name$2, scope: scope$2, rules: rules$2, media: media$2 });
+  var demo__container = Stylish.class({ name: name$2, scope: scope$2, rules: rules$2, media: media$2 });
 
-  var baseRules = demo__el.rules;
+  var updateOpacity = function updateOpacity() {
+    var baseRules = demo__el.rules;
+    var opacity = 10;
+    var increment = true;
 
-  var start = null;
-  var progress = null;
-
-  function step(timestamp) {
-    if (!start) start = timestamp;
-    progress = timestamp - start;
-
-    demo__el.rules = "\n    " + baseRules + "\n    opacity: ." + Math.round(progress) + ";\n    ";
-    if (progress > 998) {
-      start = 0;
+    function step() {
+      increment ? ++opacity : --opacity;
+      if (opacity >= 99) increment = false;
+      if (opacity <= 10) increment = true;
+      demo__el.rules = "\n    " + baseRules + "\n    opacity: ." + opacity + ";\n    ";
+      window.requestAnimationFrame(step);
     }
     window.requestAnimationFrame(step);
-  }
+  };
 
-  window.requestAnimationFrame(step);
+  var updateColors = function updateColors() {
+    var baseRules = demo__container.rules;
+    var rgb = [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)];
+
+    var increment = [true, true, true];
+
+    function step() {
+      rgb = rgb.map(function (color, i) {
+        increment[i] ? ++color : --color;
+        if (color >= 255) increment[i] = false;
+        if (color <= 0) increment[i] = true;
+        console.log(color);
+        return color;
+      });
+
+      demo__container.rules = "\n    " + baseRules + "\n    background: rgb(" + rgb.toString() + ");\n    ";
+      window.requestAnimationFrame(step);
+    }
+    window.requestAnimationFrame(step);
+  };
+
+  updateOpacity();
+  updateColors();
 
 }());

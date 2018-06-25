@@ -6,7 +6,7 @@ const name = "container";
 const scope = "demo";
 
 const rules = `
-    background: ${colors("yellow", 700)};
+    background-color: ${colors("yellow", 700)};
     ${grid}
 `;
 
