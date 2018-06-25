@@ -7,6 +7,7 @@ import { MAIN_SHEET_ID } from "../constants";
  *
  */
 const addClassToContainer = container => cssObj => {
+  console.log(cssObj)
   // ensure that if the scope already exists, that there is no existing class within that scope to collide with
   if (container.classes[cssObj.scope].includes(cssObj.class)) {
     throw Error(
@@ -31,11 +32,6 @@ const addClassToContainer = container => cssObj => {
       0
     );
   } else if (typeof cssObj.rules === "object") {
-    console.log(`.${cssObj.class} { 
-          ${Object.keys(cssObj.rules)
-            .map(key => `${key}: ${cssObj.rules[key]}`)
-            .join(";")}
-        }`);
     mainSheet.sheet.insertRule(
       `.${cssObj.class} { 
           ${Object.keys(cssObj.rules)

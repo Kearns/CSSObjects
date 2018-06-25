@@ -22,6 +22,7 @@
   };
 
   var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
+  var KEYFRAME_SHEET_ID = "STYLISH_KEYFRAME_" + Math.floor(Math.random() * 16) + ";";
 
   var _typeof$1 = typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol" ? function (obj) {
     return typeof obj === "undefined" ? "undefined" : _typeof(obj);
@@ -29,29 +30,20 @@
     return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
   };
 
-  var classCallCheck$1 = function classCallCheck$$1(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
+  var defineProperty$1 = function defineProperty$$1(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
     }
+
+    return obj;
   };
-
-  var createClass$1 = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
 
   var toConsumableArray$1 = function toConsumableArray$$1(arr) {
     if (Array.isArray(arr)) {
@@ -71,6 +63,7 @@
    */
   var addClassToContainer = function addClassToContainer(container) {
     return function (cssObj) {
+      console.log(cssObj);
       // ensure that if the scope already exists, that there is no existing class within that scope to collide with
       if (container.classes[cssObj.scope].includes(cssObj.class)) {
         throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
@@ -84,9 +77,6 @@
       } else if (typeof cssObj.rules === "string") {
         mainSheet.sheet.insertRule("." + cssObj.class + " {\n        " + cssObj.rules + "\n    }", 0);
       } else if (_typeof$1(cssObj.rules) === "object") {
-        console.log("." + cssObj.class + " { \n          " + Object.keys(cssObj.rules).map(function (key) {
-          return key + ": " + cssObj.rules[key];
-        }).join(";") + "\n        }");
         mainSheet.sheet.insertRule("." + cssObj.class + " { \n          " + Object.keys(cssObj.rules).map(function (key) {
           return key + ": " + cssObj.rules[key];
         }).join(";") + "\n        }");
@@ -157,82 +147,81 @@
       var mainSheet = container.sheets.find(function (sheet) {
         return sheet.id === MAIN_SHEET_ID;
       }).sheet;
-
       var index = -1;
       index = Object.values(mainSheet.rules).findIndex(function (rule) {
         return rule.selectorText === "." + cssObj.class;
       });
+
       mainSheet.deleteRule(index);
-      mainSheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", mainSheet.rules.length);
+      mainSheet.insertRule("." + cssObj.class + " { " + cssObj.rules + " }", mainSheet.rules.length);
       return cssObj;
     };
   };
 
   var mainSheet = document.createElement("style");
+  var keyframeSheet = document.createElement("style");
   mainSheet.id = MAIN_SHEET_ID;
+  keyframeSheet.id = KEYFRAME_SHEET_ID;
   document.head.appendChild(mainSheet);
+  document.head.appendChild(keyframeSheet);
 
   var Container = {
-    sheets: [mainSheet],
+    sheets: [mainSheet, keyframeSheet],
     scopes: [],
     classes: {}
   };
 
-  Container.pushClassObject = function (cssObj) {
+  Container.pushClass = function (cssObj) {
     return compose(addMediaQueriesToContainer(Container), addClassToContainer(Container), addScopeToContainer(Container))(cssObj);
   };
 
-  Container.updateClassObject = function (cssObj) {
+  Container.updateClass = function (cssObj) {
     return compose(updateClassToContainer(Container))(cssObj);
   };
 
-  // TODO: Allow single instances of classes that can be manipulated separate from main class ie (class = demo__class, instance = demo__class--eoj2is23)
-
-  var CSSObject = function () {
-    function CSSObject(_ref) {
-      var name = _ref.name,
-          rules = _ref.rules,
-          scope = _ref.scope,
-          _ref$media = _ref.media,
-          media = _ref$media === undefined ? {} : _ref$media;
-      classCallCheck$1(this, CSSObject);
-
-      this.name = name;
-      this.rules = rules;
-      this.media = media;
-      // when setting rules, should check if it is array or string and convert to array for easy value replacement
-      this.scope = scope;
-      this.class = scope ? scope + "__" + name : name;
-      Container.pushClassObject({
-        class: this.class,
-        name: name,
-        rules: rules,
-        media: media,
-        scope: scope
-      });
-      return this.class;
-    }
-
-    createClass$1(CSSObject, [{
-      key: "update",
-      value: function update(_ref2) {
-        var rules = _ref2.rules,
-            media = _ref2.media;
-
-        this.rules = rules;
-        this.media = media;
-        Container.updateClassObject(this);
+  var handler = {
+    get: function get$$1(target, key) {
+      invariant(key, "get");
+      switch (key) {
+        case "class":
+          return target.scope ? target.scope + "__" + target.name : target.name;
+        default:
+          return target[key];
       }
-    }]);
-    return CSSObject;
-  }();
+    },
+    set: function set$$1(target, key, value) {
+      Container.updateClass(Object.assign(target, defineProperty$1({}, key, value)));
+      return true;
+    }
+  };
 
-  var createClass$1$1 = function createClass$$1(args) {
-    return new CSSObject(args);
+  function invariant(key, action) {
+    if (key[0] === "_") {
+      throw new Error("Invalid attempt to " + action + " private \"" + key + "\" property");
+    }
+  }
+
+  var createClass$1 = function createClass$$1(_ref) {
+    var name = _ref.name,
+        scope = _ref.scope,
+        _ref$rules = _ref.rules,
+        rules = _ref$rules === undefined ? {} : _ref$rules,
+        _ref$media = _ref.media,
+        media = _ref$media === undefined ? {} : _ref$media;
+
+    var CSSObj = new Proxy({
+      name: name,
+      scope: scope,
+      rules: rules,
+      media: media,
+      class: scope ? scope + "__" + name : name
+    }, handler);
+    Container.pushClass(CSSObj);
+    return CSSObj;
   };
 
   var Stylish = {
-    class: createClass$1$1
+    class: createClass$1
   };
 
   var palette = {
@@ -273,12 +262,12 @@
     "screen and (max-width:400px)": "\n    background: " + colors("blue", 300) + ";\n  "
   };
 
-  Stylish.class({ name: name, scope: scope, rules: rules, media: media });
+  var demo__el = Stylish.class({ name: name, scope: scope, rules: rules, media: media });
 
   var name$1 = "row";
   var scope$1 = "demo";
   var rules$1 = "\n    background: " + colors("green", 700) + ";\n    " + row + "\n";
-  console.log('row', rules$1);
+
   var media$1 = {
     "screen and (max-width:700px)": "background: " + colors("green", 500) + ";",
     "screen and (max-width:400px)": "background: " + colors("green", 300) + ";"
@@ -297,5 +286,23 @@
   };
 
   Stylish.class({ name: name$2, scope: scope$2, rules: rules$2, media: media$2 });
+
+  var baseRules = demo__el.rules;
+
+  var start = null;
+  var progress = null;
+
+  function step(timestamp) {
+    if (!start) start = timestamp;
+    progress = timestamp - start;
+
+    demo__el.rules = "\n    " + baseRules + "\n    opacity: ." + Math.round(progress) + ";\n    ";
+    if (progress > 998) {
+      start = 0;
+    }
+    window.requestAnimationFrame(step);
+  }
+
+  window.requestAnimationFrame(step);
 
 }());
