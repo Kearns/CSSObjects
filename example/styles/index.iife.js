@@ -45,6 +45,20 @@
     return obj;
   };
 
+  var _extends$1 = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
   var toConsumableArray$1 = function toConsumableArray$$1(arr) {
     if (Array.isArray(arr)) {
       for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
@@ -63,7 +77,6 @@
    */
   var addClassToContainer = function addClassToContainer(container) {
     return function (cssObj) {
-      console.log(cssObj);
       // ensure that if the scope already exists, that there is no existing class within that scope to collide with
       if (container.classes[cssObj.scope].includes(cssObj.class)) {
         throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
@@ -73,13 +86,14 @@
         return sheet.id === MAIN_SHEET_ID;
       });
       if (Array.isArray(cssObj.rules)) {
-        mainSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
+        mainSheet.sheet.insertRule(("." + cssObj.class + " { " + cssObj.rules.join(";") + " }").replace(/\s*/g, ""), 0);
       } else if (typeof cssObj.rules === "string") {
-        mainSheet.sheet.insertRule("." + cssObj.class + " {\n        " + cssObj.rules + "\n    }", 0);
+        console.log(("." + cssObj.class + "{" + cssObj.rules + "}").replace(/\s*/g, ""));
+        mainSheet.sheet.insertRule(("." + cssObj.class + "{" + cssObj.rules + "}").replace(/\s*/g, ""), 0);
       } else if (_typeof$1(cssObj.rules) === "object") {
         mainSheet.sheet.insertRule("." + cssObj.class + " { \n          " + Object.keys(cssObj.rules).map(function (key) {
           return key + ": " + cssObj.rules[key];
-        }).join(";") + "\n        }");
+        }).join(";").replace(/\s*/g, "") + "\n        }");
       }
       return cssObj;
     };
@@ -128,9 +142,9 @@
         }
 
         if (Array.isArray(cssObj.media[mediaQuery])) {
-          mediaSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.media[mediaQuery].join(";"), 0);
+          mediaSheet.sheet.insertRule(("." + cssObj.class + " { " + cssObj.media[mediaQuery].join(";")).replace(/\s*/g, ""), 0);
         } else if (typeof cssObj.media[mediaQuery] === "string") {
-          mediaSheet.sheet.insertRule("." + cssObj.class + " {\n            " + cssObj.media[mediaQuery] + "\n        }", 0);
+          mediaSheet.sheet.insertRule(("." + cssObj.class + "{" + cssObj.media[mediaQuery] + "}").replace(/\s*/g, ""), 0);
         }
       });
     };
@@ -153,7 +167,7 @@
       });
 
       mainSheet.deleteRule(index);
-      mainSheet.insertRule("." + cssObj.class + " { " + cssObj.rules + " }", mainSheet.rules.length);
+      mainSheet.insertRule(("." + cssObj.class + "{" + cssObj.rules + "}").replace(/\s*/g, ""), mainSheet.rules.length);
       return cssObj;
     };
   };
@@ -179,6 +193,18 @@
     return compose(updateClassToContainer(Container))(cssObj);
   };
 
+  var generateUUID = function generateUUID() {
+    var d = new Date().getTime();
+    var uuid = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(/[x]/g, function (c) {
+      var r = (d + Math.random() * 16) % 16 | 0;
+      d = Math.floor(d / 16);
+      return (c == "x" ? r : r & 0x3 | 0x8).toString(16);
+    });
+    return uuid;
+  };
+
+  // const styleRegex = style => `/[\w\s]*:[\w\s]*;/g`;
+
   var handler = {
     get: function get$$1(target, key) {
       invariant(key, "get");
@@ -190,6 +216,20 @@
       }
     },
     set: function set$$1(target, key, value) {
+      // if (key === "rules") {
+      //   Container.updateClass(Object.assign(target, { [key]: value }));
+
+      //   let newRules = value.replace(/\s*/g, "").split(";");
+      //   let rules = target.rules;
+
+      //   newRules.forEach(style => {
+      //     const rule = style.split(":");
+      //     const regex = styleRegex(rule[0]);
+      //     console.log(rules.replace(regex));
+      //   });
+
+      //   Container.updateClass(Object.assign(target, { [key]: value }));
+      // } else 
       Container.updateClass(Object.assign(target, defineProperty$1({}, key, value)));
       return true;
     }
@@ -220,8 +260,15 @@
     return CSSObj;
   };
 
+  var createInstance = function createInstance(styleObject) {
+    return createClass$1(_extends$1({}, styleObject, {
+      name: styleObject.name + "--" + generateUUID()
+    }));
+  };
+
   var Stylish = {
-    class: createClass$1
+    class: createClass$1,
+    instance: createInstance
   };
 
   var palette = {
@@ -273,7 +320,7 @@
     "screen and (max-width:400px)": "background: " + colors("green", 300) + ";"
   };
 
-  var demo__row = Stylish.class({ name: name$1, scope: scope$1, rules: rules$1, media: media$1 });
+  Stylish.class({ name: name$1, scope: scope$1, rules: rules$1, media: media$1 });
 
   var name$2 = "container";
   var scope$2 = "demo";
@@ -285,58 +332,29 @@
     "screen and (max-width:400px)": "\n    background: " + colors("yellow", 300) + ";\n  "
   };
 
-  var demo__container = Stylish.class({ name: name$2, scope: scope$2, rules: rules$2, media: media$2 });
+  Stylish.class({ name: name$2, scope: scope$2, rules: rules$2, media: media$2 });
 
-  var updateOpacity = function updateOpacity() {
-    var baseRules = demo__el.rules;
-    var opacity = 10;
-    var increment = true;
+  var demoEls = [].slice.call(document.querySelectorAll("." + demo__el.class));
 
-    function step() {
-      increment ? ++opacity : --opacity;
-      if (opacity >= 99) increment = false;
-      if (opacity <= 10) increment = true;
-      demo__el.rules = "\n      " + baseRules + "\n      opacity: ." + opacity + ";\n      ";
-      window.requestAnimationFrame(step);
-    }
-    window.requestAnimationFrame(step);
-  };
+  var elStyleInstances = demoEls.map(function (el) {
+    var elInstance = Stylish.instance(demo__el);
+    el.classList.add(elInstance.class);
+    return elInstance;
+  });
 
-  var updateBorderRadius = function updateBorderRadius() {
-    var baseRules = demo__row.rules;
-    var radius = 0;
+  var baseRotate = 0;
 
-    function step() {
-      radius = radius === 359 ? 0 : radius + 1;
+  // console.log(elStyleInstances)
 
-      demo__row.rules = "\n    " + baseRules + "\n    transform: rotate3d(1, 2.0, 3.0, " + radius + "deg);\n    ";
-      window.requestAnimationFrame(step);
-    }
-    window.requestAnimationFrame(step);
-  };
+  elStyleInstances.forEach(function (el) {
+    // console.log(el)
+    el.rules = "\n    " + el.rules + "\n    transform: rotateY(" + (baseRotate += 15) + "deg)translateZ(124px);\n    border-radius: 100%;\n    position: absolute;\n    background: none;\n    border: 5px solid blue;\n    ";
+    // rotate(el, el.rules);
+  });
 
-  var updateColors = function updateColors() {
-    var baseRules = demo__container.rules;
-    var rgb = [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)];
+  // const elements = [demo__container, demo__row, demo__el];
+  // const baseRules = [demo__container.rules, demo__row.rules, demo__el.rules];
 
-    var increment = [true, true, true];
-
-    function step() {
-      rgb = rgb.map(function (color, i) {
-        increment[i] ? ++color : --color;
-        if (color >= 255) increment[i] = false;
-        if (color <= 0) increment[i] = true;
-        return color;
-      });
-
-      demo__container.rules = "\n    " + baseRules + "\n    background: rgb(" + rgb.toString() + ");\n    ";
-      window.requestAnimationFrame(step);
-    }
-    window.requestAnimationFrame(step);
-  };
-
-  updateOpacity();
-  updateColors();
-  updateBorderRadius();
+  // elements.forEach((el, i) => updateColors(el, baseRules[i]));
 
 }());

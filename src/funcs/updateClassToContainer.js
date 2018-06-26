@@ -16,7 +16,7 @@ const updateClassToContainer = container => cssObj => {
 
   mainSheet.deleteRule(index);
   mainSheet.insertRule(
-    `.${cssObj.class} { ${cssObj.rules} }`,
+    `.${cssObj.class}{${cssObj.rules}}`.replace(/\s*/g, ""),
     mainSheet.rules.length
   );
   return cssObj;

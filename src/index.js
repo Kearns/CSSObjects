@@ -1,7 +1,8 @@
-import { createClass } from "./CSSObject";
+import { createClass, createInstance } from "./CSSObject";
 
 const Stylish = {
-  class: createClass
+  class: createClass,
+  instance: createInstance
 };
 
 export default Stylish;

@@ -1,4 +1,6 @@
 import Container from "./Container";
+import generateUUID from "./utils/generateUUID";
+import styleRegex from "./utils/styleRegex";
 
 var handler = {
   get(target, key) {
@@ -11,6 +13,20 @@ var handler = {
     }
   },
   set(target, key, value) {
+    // if (key === "rules") {
+    //   Container.updateClass(Object.assign(target, { [key]: value }));
+
+    //   let newRules = value.replace(/\s*/g, "").split(";");
+    //   let rules = target.rules;
+
+    //   newRules.forEach(style => {
+    //     const rule = style.split(":");
+    //     const regex = styleRegex(rule[0]);
+    //     console.log(rules.replace(regex));
+    //   });
+
+    //   Container.updateClass(Object.assign(target, { [key]: value }));
+    // } else 
     Container.updateClass(Object.assign(target, { [key]: value }));
     return true;
   }
@@ -36,3 +52,9 @@ export const createClass = ({ name, scope, rules = {}, media = {} }) => {
   Container.pushClass(CSSObj);
   return CSSObj;
 };
+
+export const createInstance = styleObject =>
+  createClass({
+    ...styleObject,
+    name: `${styleObject.name}--${generateUUID()}`
+  });

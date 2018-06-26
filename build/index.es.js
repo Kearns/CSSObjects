@@ -36,6 +36,20 @@ var defineProperty = function (obj, key, value) {
   return obj;
 };
 
+var _extends = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
 var toConsumableArray = function (arr) {
   if (Array.isArray(arr)) {
     for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
@@ -54,7 +68,6 @@ var toConsumableArray = function (arr) {
  */
 var addClassToContainer = function addClassToContainer(container) {
   return function (cssObj) {
-    console.log(cssObj);
     // ensure that if the scope already exists, that there is no existing class within that scope to collide with
     if (container.classes[cssObj.scope].includes(cssObj.class)) {
       throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
@@ -64,13 +77,14 @@ var addClassToContainer = function addClassToContainer(container) {
       return sheet.id === MAIN_SHEET_ID;
     });
     if (Array.isArray(cssObj.rules)) {
-      mainSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.rules.join(";") + " }", 0);
+      mainSheet.sheet.insertRule(("." + cssObj.class + " { " + cssObj.rules.join(";") + " }").replace(/\s*/g, ""), 0);
     } else if (typeof cssObj.rules === "string") {
-      mainSheet.sheet.insertRule("." + cssObj.class + " {\n        " + cssObj.rules + "\n    }", 0);
+      console.log(("." + cssObj.class + "{" + cssObj.rules + "}").replace(/\s*/g, ""));
+      mainSheet.sheet.insertRule(("." + cssObj.class + "{" + cssObj.rules + "}").replace(/\s*/g, ""), 0);
     } else if (_typeof(cssObj.rules) === "object") {
       mainSheet.sheet.insertRule("." + cssObj.class + " { \n          " + Object.keys(cssObj.rules).map(function (key) {
         return key + ": " + cssObj.rules[key];
-      }).join(";") + "\n        }");
+      }).join(";").replace(/\s*/g, "") + "\n        }");
     }
     return cssObj;
   };
@@ -119,9 +133,9 @@ var addMediaQueriesToContainer = function addMediaQueriesToContainer(container) 
       }
 
       if (Array.isArray(cssObj.media[mediaQuery])) {
-        mediaSheet.sheet.insertRule("." + cssObj.class + " { " + cssObj.media[mediaQuery].join(";"), 0);
+        mediaSheet.sheet.insertRule(("." + cssObj.class + " { " + cssObj.media[mediaQuery].join(";")).replace(/\s*/g, ""), 0);
       } else if (typeof cssObj.media[mediaQuery] === "string") {
-        mediaSheet.sheet.insertRule("." + cssObj.class + " {\n            " + cssObj.media[mediaQuery] + "\n        }", 0);
+        mediaSheet.sheet.insertRule(("." + cssObj.class + "{" + cssObj.media[mediaQuery] + "}").replace(/\s*/g, ""), 0);
       }
     });
   };
@@ -144,7 +158,7 @@ var updateClassToContainer = function updateClassToContainer(container) {
     });
 
     mainSheet.deleteRule(index);
-    mainSheet.insertRule("." + cssObj.class + " { " + cssObj.rules + " }", mainSheet.rules.length);
+    mainSheet.insertRule(("." + cssObj.class + "{" + cssObj.rules + "}").replace(/\s*/g, ""), mainSheet.rules.length);
     return cssObj;
   };
 };
@@ -170,6 +184,18 @@ Container.updateClass = function (cssObj) {
   return compose(updateClassToContainer(Container))(cssObj);
 };
 
+var generateUUID = function generateUUID() {
+  var d = new Date().getTime();
+  var uuid = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(/[x]/g, function (c) {
+    var r = (d + Math.random() * 16) % 16 | 0;
+    d = Math.floor(d / 16);
+    return (c == "x" ? r : r & 0x3 | 0x8).toString(16);
+  });
+  return uuid;
+};
+
+// const styleRegex = style => `/[\w\s]*:[\w\s]*;/g`;
+
 var handler = {
   get: function get$$1(target, key) {
     invariant(key, "get");
@@ -181,6 +207,20 @@ var handler = {
     }
   },
   set: function set$$1(target, key, value) {
+    // if (key === "rules") {
+    //   Container.updateClass(Object.assign(target, { [key]: value }));
+
+    //   let newRules = value.replace(/\s*/g, "").split(";");
+    //   let rules = target.rules;
+
+    //   newRules.forEach(style => {
+    //     const rule = style.split(":");
+    //     const regex = styleRegex(rule[0]);
+    //     console.log(rules.replace(regex));
+    //   });
+
+    //   Container.updateClass(Object.assign(target, { [key]: value }));
+    // } else 
     Container.updateClass(Object.assign(target, defineProperty({}, key, value)));
     return true;
   }
@@ -211,8 +251,15 @@ var createClass$1 = function createClass$$1(_ref) {
   return CSSObj;
 };
 
+var createInstance = function createInstance(styleObject) {
+  return createClass$1(_extends({}, styleObject, {
+    name: styleObject.name + "--" + generateUUID()
+  }));
+};
+
 var Stylish = {
-  class: createClass$1
+  class: createClass$1,
+  instance: createInstance
 };
 
 export default Stylish;
