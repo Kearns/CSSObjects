@@ -1,8 +1,8 @@
 import { createClass, createInstance } from "./CSSObject";
 
-const Stylish = {
+const CSSObjects = {
   class: createClass,
   instance: createInstance
 };
 
-export default Stylish;
+export default CSSObjects;

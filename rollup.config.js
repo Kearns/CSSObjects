@@ -17,7 +17,7 @@ export default {
     },
     {
       file: "build/index.iife.js",
-      name: "stylish",
+      name: "CSSObjects",
       format: "iife"
     }
   ],

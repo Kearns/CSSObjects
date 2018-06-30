@@ -1,4 +1,4 @@
-var stylish = (function () {
+var CSSObjects = (function () {
   'use strict';
 
   var compose = function compose() {
@@ -15,8 +15,8 @@ var stylish = (function () {
     });
   };
 
-  var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
-  var KEYFRAME_SHEET_ID = "STYLISH_KEYFRAME_" + Math.floor(Math.random() * 16) + ";";
+  var MAIN_SHEET_ID = "CSSOBJECTS_MAIN_" + Math.floor(Math.random() * 16);
+  var KEYFRAME_SHEET_ID = "CSSOBJECTS_KEYFRAME_" + Math.floor(Math.random() * 16) + ";";
 
   var mainSheet = document.createElement("style");
   var keyframeSheet = document.createElement("style");
@@ -278,11 +278,11 @@ var stylish = (function () {
     }));
   };
 
-  var Stylish = {
+  var CSSObjects = {
     class: createClass$1,
     instance: createInstance
   };
 
-  return Stylish;
+  return CSSObjects;
 
 }());

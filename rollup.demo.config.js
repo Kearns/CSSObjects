@@ -7,7 +7,7 @@ export default {
   output: [
     {
       file: './example/styles/index.iife.js',
-      name: 'stylish',
+      name: 'CSSObjects',
       format: 'iife'
     }
   ],

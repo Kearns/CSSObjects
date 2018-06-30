@@ -1,7 +1,7 @@
 import demo__el from "./demo__el";
 import demo__row from "./demo__row";
 import demo__container from "./demo__container";
-import Stylish from "../../build/index.es";
+import CSSObjects from "../../build/index.es";
 
 const rotate = (el, baseRules) => {
   let radius = 0;
@@ -48,7 +48,7 @@ const updateColors = (el, baseRules) => {
 // const demoEls = [].slice.call(document.querySelectorAll(`.${demo__el.class}`));
 
 // const elStyleInstances = demoEls.map(el => {
-//   const elInstance = Stylish.instance(demo__el);
+//   const elInstance = CSSObjects.instance(demo__el);
 //   el.classList.add(elInstance.class);
 //   return elInstance;
 // });

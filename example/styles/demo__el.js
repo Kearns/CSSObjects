@@ -1,4 +1,4 @@
-import Stylish from "../../build/index.es.js";
+import CSSObjects from "../../build/index.es.js";
 import { colors } from "./variables/colors";
 import { col } from "./variables/grid";
 
@@ -18,4 +18,4 @@ const media = {
   `
 };
 
-export default Stylish.class({ name, scope, rules, media });
+export default CSSObjects.class({ name, scope, rules, media });

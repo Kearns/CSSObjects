@@ -28,7 +28,7 @@ Trace:
 
 npm manifest: 
   {
-    "name": "stylish",
+    "name": "CSSObjects",
     "version": "1.0.0",
     "description": "Sane CSS",
     "main": "build/index.js",

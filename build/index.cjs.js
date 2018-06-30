@@ -14,8 +14,8 @@ var compose = function compose() {
   });
 };
 
-var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
-var KEYFRAME_SHEET_ID = "STYLISH_KEYFRAME_" + Math.floor(Math.random() * 16) + ";";
+var MAIN_SHEET_ID = "CSSOBJECTS_MAIN_" + Math.floor(Math.random() * 16);
+var KEYFRAME_SHEET_ID = "CSSOBJECTS_KEYFRAME_" + Math.floor(Math.random() * 16) + ";";
 
 var mainSheet = document.createElement("style");
 var keyframeSheet = document.createElement("style");
@@ -277,9 +277,9 @@ var createInstance = function createInstance(styleObject) {
   }));
 };
 
-var Stylish = {
+var CSSObjects = {
   class: createClass$1,
   instance: createInstance
 };
 
-module.exports = Stylish;
+module.exports = CSSObjects;

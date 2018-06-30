@@ -1,4 +1,4 @@
-# Stylish
+# CSSObjects
 
 JS driven, scoped and sane styles. Framework agnostic - for use with React, Angular, or good old vanilla JS.
 
@@ -14,10 +14,10 @@ The class interface allows us to define scoped classes. If another class with th
 - `media`: Takes an object with key value pairs where the key is your media query and the value is an array of style rules.
 
 ```JS
-import Stylish from "../../build/index.es.js";
+import CSSObjects from "cssobjects";
 import { colors } from "./variables/colors";
 import { col } from "./variables/grid";
-export default Stylish.class({
+export default CSSObjects.class({
     name: 'example',
     scope: 'scope',
     rules: `

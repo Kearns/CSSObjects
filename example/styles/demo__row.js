@@ -1,4 +1,4 @@
-import Stylish from "../../build/index.es.js";
+import CSSObjects from "../../build/index.es.js";
 import { colors } from "./variables/colors";
 import { row } from "./variables/grid";
 
@@ -14,4 +14,4 @@ const media = {
   "screen and (max-width:400px)": `background: ${colors("green", 300)};`
 };
 
-export default Stylish.class({ name, scope, rules, media });
+export default CSSObjects.class({ name, scope, rules, media });

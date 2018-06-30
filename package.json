@@ -1,6 +1,6 @@
 {
-  "name": "stylish",
-  "version": "1.0.0",
+  "name": "cssobjects",
+  "version": "0.0.1",
   "description": "Sane CSS",
   "main": "build/index.js",
   "module": "build/index.esm.js",
@@ -12,7 +12,7 @@
     "demo:watch": "rollup -c ./rollup.demo.config.js --watch",
     "develop": "concurrently --kill-others \"npm run build:watch\" \"npm run demo:watch\""
   },
-  "author": "",
+  "author": "Patrick Kearns",
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {

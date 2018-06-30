@@ -15,8 +15,8 @@
     });
   };
 
-  var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
-  var KEYFRAME_SHEET_ID = "STYLISH_KEYFRAME_" + Math.floor(Math.random() * 16) + ";";
+  var MAIN_SHEET_ID = "CSSOBJECTS_MAIN_" + Math.floor(Math.random() * 16);
+  var KEYFRAME_SHEET_ID = "CSSOBJECTS_KEYFRAME_" + Math.floor(Math.random() * 16) + ";";
 
   var mainSheet = document.createElement("style");
   var keyframeSheet = document.createElement("style");
@@ -278,7 +278,7 @@
     }));
   };
 
-  var Stylish = {
+  var CSSObjects = {
     class: createClass$1,
     instance: createInstance
   };
@@ -321,7 +321,7 @@
     "screen and (max-width:400px)": "\n    background: " + colors("blue", 300) + ";\n  "
   };
 
-  var demo__el = Stylish.class({ name: name, scope: scope, rules: rules, media: media });
+  var demo__el = CSSObjects.class({ name: name, scope: scope, rules: rules, media: media });
 
   var name$1 = "row";
   var scope$1 = "demo";
@@ -332,7 +332,7 @@
     "screen and (max-width:400px)": "background: " + colors("green", 300) + ";"
   };
 
-  Stylish.class({ name: name$1, scope: scope$1, rules: rules$1, media: media$1 });
+  CSSObjects.class({ name: name$1, scope: scope$1, rules: rules$1, media: media$1 });
 
   var name$2 = "container";
   var scope$2 = "demo";
@@ -344,12 +344,12 @@
     "screen and (max-width:400px)": "\n    background: " + colors("yellow", 300) + ";\n  "
   };
 
-  Stylish.class({ name: name$2, scope: scope$2, rules: rules$2, media: media$2 });
+  CSSObjects.class({ name: name$2, scope: scope$2, rules: rules$2, media: media$2 });
 
   // const demoEls = [].slice.call(document.querySelectorAll(`.${demo__el.class}`));
 
   // const elStyleInstances = demoEls.map(el => {
-  //   const elInstance = Stylish.instance(demo__el);
+  //   const elInstance = CSSObjects.instance(demo__el);
   //   el.classList.add(elInstance.class);
   //   return elInstance;
   // });
