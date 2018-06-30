@@ -42,7 +42,7 @@ const demoEl1 = props => <div className={example.class} />;
 
 Browser Testing: **PASSED**  
 Supported Browsers: **Chrome**, **Firefox**, **Edge**, **Safari**, **IE11\***  
-_\*with babel-polyfill loaded browser side_
+_\*with babel-polyfill_
 
 **TODO:**
 
