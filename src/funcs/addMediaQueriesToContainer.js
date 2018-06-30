@@ -5,7 +5,7 @@
  *
  */
 
-import { insertRule } from "../utils/sheetFns";
+import { insertRule, findSheet } from "../utils/sheetFns";
 
 const addMediaQueriesToContainer = container => cssObj => {
   if (Object.keys(cssObj.media).length === 0 || cssObj.media.length === 0) {
@@ -14,11 +14,7 @@ const addMediaQueriesToContainer = container => cssObj => {
   Object.keys(cssObj.media).forEach(mediaQuery => {
     let mediaSheet;
 
-    mediaSheet = container.sheets.find(
-      sheet =>
-        sheet.sheet.media["mediaText"].toLowerCase().replace(/\s/g, "") ===
-        mediaQuery.toLowerCase().replace(/\s/g, "")
-    );
+    mediaSheet = findSheet({ container, mediaQuery });
 
     if (mediaSheet === undefined) {
       mediaSheet = document.createElement("style");
@@ -27,7 +23,9 @@ const addMediaQueriesToContainer = container => cssObj => {
       document.head.appendChild(mediaSheet);
     }
 
-    insertRule(mediaSheet.sheet, cssObj, { mediaQuery });
+    const sheet = mediaSheet.sheet;
+
+    insertRule({ sheet, cssObj, mediaQuery });
   });
 };
 

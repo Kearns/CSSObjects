@@ -1,8 +1,9 @@
 import Container from "./Container";
 import generateUID from "./utils/generateUID";
+import invariant from "./utils/invariant";
 import styleRegex from "./utils/styleRegex";
 
-var handler = {
+const handler = {
   get(target, key) {
     invariant(key, "get");
     switch (key) {
@@ -20,13 +21,11 @@ var handler = {
       let trimmedValues = value.replace(/\s*/g, "");
       existingRules.forEach(style => {
         // const regex = styleRegex(rule[0]);
-        console.group(`${style};`)
-        trimmedValues.replace(`${style};`, '');
-        console.groupEnd()
+        console.group(`${style};`);
+        trimmedValues.replace(`${style};`, "");
+        console.groupEnd();
       });
-      Container.updateClass(
-        Object.assign(target, { [key]: trimmedValues })
-      );
+      Container.updateClass(Object.assign(target, { [key]: trimmedValues }));
     } else {
       Container.updateClass(Object.assign(target, { [key]: value }));
     }
@@ -34,26 +33,19 @@ var handler = {
   }
 };
 
-function invariant(key, action) {
-  if (key[0] === "_") {
-    throw new Error(`Invalid attempt to ${action} private "${key}" property`);
-  }
-}
-
-export const createClass = ({ name, scope, rules = {}, media = {} }) => {
-  const CSSObj = new Proxy(
-    {
-      name,
-      scope,
-      rules,
-      media,
-      class: scope ? `${scope}__${name}` : name
-    },
-    handler
+export const createClass = ({ name, scope, rules = {}, media = {} }) =>
+  Container.pushClass(
+    new Proxy(
+      {
+        name,
+        scope,
+        rules,
+        media,
+        class: scope ? `${scope}__${name}` : name
+      },
+      handler
+    )
   );
-  Container.pushClass(CSSObj);
-  return CSSObj;
-};
 
 export const createInstance = styleObject =>
   createClass({

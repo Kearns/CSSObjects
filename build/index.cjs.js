@@ -17,19 +17,40 @@ var compose = function compose() {
 var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
 var KEYFRAME_SHEET_ID = "STYLISH_KEYFRAME_" + Math.floor(Math.random() * 16) + ";";
 
-var insertRule = function insertRule(sheet, styleObj, _ref) {
-  var mediaQuery = _ref.mediaQuery,
+var mainSheet = document.createElement("style");
+var keyframeSheet = document.createElement("style");
+
+mainSheet.id = MAIN_SHEET_ID;
+keyframeSheet.id = KEYFRAME_SHEET_ID;
+
+document.head.appendChild(mainSheet);
+document.head.appendChild(keyframeSheet);
+
+var insertRule = function insertRule(_ref) {
+  var sheet = _ref.sheet,
+      cssObj = _ref.cssObj,
+      _ref$mediaQuery = _ref.mediaQuery,
+      mediaQuery = _ref$mediaQuery === undefined ? undefined : _ref$mediaQuery,
       _ref$index = _ref.index,
       index = _ref$index === undefined ? 0 : _ref$index;
-
-  var rules = mediaQuery ? styleObj.media[mediaQuery] : styleObj.rules;
-  return sheet.insertRule(("." + styleObj.class + "{" + rules + "}").replace(/\s*/g, ""), index);
+  return sheet.insertRule(("." + cssObj.class + "{" + (mediaQuery ? cssObj.media[mediaQuery] : cssObj.rules) + "}").replace(/\s*/g, ""), index);
 };
 
-var deleteRule = function deleteRule(sheet, _ref2) {
-  var index = _ref2.index;
-
+var deleteRule = function deleteRule(_ref2) {
+  var sheet = _ref2.sheet,
+      index = _ref2.index;
   return sheet.deleteRule(index);
+};
+
+var findSheet = function findSheet(_ref3) {
+  var container = _ref3.container,
+      id = _ref3.id,
+      mediaQuery = _ref3.mediaQuery;
+  return id ? container.sheets.find(function (sheet) {
+    return sheet.id === id;
+  }) : container.sheets.find(function (sheet) {
+    return sheet.sheet.media["mediaText"].toLowerCase().replace(/\s/g, "") === mediaQuery.toLowerCase().replace(/\s/g, "");
+  });
 };
 
 var defineProperty = function (obj, key, value) {
@@ -86,11 +107,9 @@ var addClassToContainer = function addClassToContainer(container) {
 
     container.classes[cssObj.scope] = [].concat(toConsumableArray(container.classes[cssObj.scope]), [cssObj.className]);
 
-    var mainSheet = container.sheets.find(function (sheet) {
-      return sheet.id === MAIN_SHEET_ID;
-    });
+    var sheet = findSheet({ container: container, id: MAIN_SHEET_ID }).sheet;
 
-    insertRule(mainSheet.sheet, cssObj);
+    insertRule({ sheet: sheet, cssObj: cssObj });
 
     return cssObj;
   };
@@ -128,9 +147,7 @@ var addMediaQueriesToContainer = function addMediaQueriesToContainer(container) 
     Object.keys(cssObj.media).forEach(function (mediaQuery) {
       var mediaSheet = void 0;
 
-      mediaSheet = container.sheets.find(function (sheet) {
-        return sheet.sheet.media["mediaText"].toLowerCase().replace(/\s/g, "") === mediaQuery.toLowerCase().replace(/\s/g, "");
-      });
+      mediaSheet = findSheet({ container: container, mediaQuery: mediaQuery });
 
       if (mediaSheet === undefined) {
         mediaSheet = document.createElement("style");
@@ -139,7 +156,9 @@ var addMediaQueriesToContainer = function addMediaQueriesToContainer(container) 
         document.head.appendChild(mediaSheet);
       }
 
-      insertRule(mediaSheet.sheet, cssObj, { mediaQuery: mediaQuery });
+      var sheet = mediaSheet.sheet;
+
+      insertRule({ sheet: sheet, cssObj: cssObj, mediaQuery: mediaQuery });
     });
   };
 };
@@ -155,30 +174,24 @@ var updateClassToContainer = function updateClassToContainer(container) {
   return function (cssObj) {
     var mainSheet = container.sheets.find(function (sheet) {
       return sheet.id === MAIN_SHEET_ID;
-    });
+    }).sheet;
     var index = -1;
 
     index = Object.values(mainSheet.rules).findIndex(function (rule) {
       return rule.selectorText === "." + cssObj.class;
     });
 
-    deleteRule(mainSheet.sheet, { index: index });
-    insertRule(mainSheet.sheet, cssObj, {
+    deleteRule({ sheet: mainSheet.sheet, index: index });
+
+    insertRule({
+      cssObj: cssObj,
+      sheet: mainSheet.sheet,
       index: mainSheet.rules.length
     });
 
     return cssObj;
   };
 };
-
-var mainSheet = document.createElement("style");
-var keyframeSheet = document.createElement("style");
-
-mainSheet.id = MAIN_SHEET_ID;
-keyframeSheet.id = KEYFRAME_SHEET_ID;
-
-document.head.appendChild(mainSheet);
-document.head.appendChild(keyframeSheet);
 
 var Container = {
   sheets: [mainSheet, keyframeSheet],
@@ -196,12 +209,18 @@ Container.updateClass = function (cssObj) {
 
 var generateUID = function generateUID() {
   var d = new Date().getTime();
-  var uid = "xxxx-xxxx-xxxx".replace(/[x]/g, function (c) {
+  var uid = "xxxx-xx-xxxx".replace(/[x]/g, function (c) {
     var r = (d + Math.random() * 16) % 16 | 0;
     d = Math.floor(d / 16);
     return (c == "x" ? r : r & 0x3 | 0x8).toString(16);
   });
   return uid;
+};
+
+var invariant = function invariant(key, action) {
+  if (key[0] === "_") {
+    throw new Error("Invalid attempt to " + action + " private \"" + key + "\" property");
+  }
 };
 
 // const styleRegex = style => `/[\w\s]*:[\w\s]*;/g`;
@@ -225,7 +244,7 @@ var handler = {
       existingRules.forEach(function (style) {
         // const regex = styleRegex(rule[0]);
         console.group(style + ";");
-        trimmedValues.replace(style + ";", '');
+        trimmedValues.replace(style + ";", "");
         console.groupEnd();
       });
       Container.updateClass(Object.assign(target, defineProperty({}, key, trimmedValues)));
@@ -236,12 +255,6 @@ var handler = {
   }
 };
 
-function invariant(key, action) {
-  if (key[0] === "_") {
-    throw new Error("Invalid attempt to " + action + " private \"" + key + "\" property");
-  }
-}
-
 var createClass$1 = function createClass$$1(_ref) {
   var name = _ref.name,
       scope = _ref.scope,
@@ -249,16 +262,13 @@ var createClass$1 = function createClass$$1(_ref) {
       rules = _ref$rules === undefined ? {} : _ref$rules,
       _ref$media = _ref.media,
       media = _ref$media === undefined ? {} : _ref$media;
-
-  var CSSObj = new Proxy({
+  return Container.pushClass(new Proxy({
     name: name,
     scope: scope,
     rules: rules,
     media: media,
     class: scope ? scope + "__" + name : name
-  }, handler);
-  Container.pushClass(CSSObj);
-  return CSSObj;
+  }, handler));
 };
 
 var createInstance = function createInstance(styleObject) {

@@ -9,15 +9,19 @@ import { insertRule, deleteRule } from "../utils/sheetFns";
  */
 
 const updateClassToContainer = container => cssObj => {
-  const mainSheet = container.sheets.find(sheet => sheet.id === MAIN_SHEET_ID);
+  const mainSheet = container.sheets.find(sheet => sheet.id === MAIN_SHEET_ID)
+    .sheet;
   let index = -1;
-  
+
   index = Object.values(mainSheet.rules).findIndex(
     rule => rule.selectorText === "." + cssObj.class
   );
 
-  deleteRule(mainSheet.sheet, { index });
-  insertRule(mainSheet.sheet, cssObj, {
+  deleteRule({ sheet: mainSheet.sheet, index });
+
+  insertRule({
+    cssObj,
+    sheet: mainSheet.sheet,
     index: mainSheet.rules.length
   });
 

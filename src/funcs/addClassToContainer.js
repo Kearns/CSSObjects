@@ -1,5 +1,5 @@
 import { MAIN_SHEET_ID } from "../constants";
-import { insertRule } from "../utils/sheetFns";
+import { insertRule, findSheet } from "../utils/sheetFns";
 /**
  * adds class to container
  * @param {Object} container
@@ -19,9 +19,9 @@ const addClassToContainer = container => cssObj => {
     cssObj.className
   ];
 
-  const mainSheet = container.sheets.find(sheet => sheet.id === MAIN_SHEET_ID);
+  const sheet = findSheet({ container, id: MAIN_SHEET_ID }).sheet;
 
-  insertRule(mainSheet.sheet, cssObj);
+  insertRule({ sheet, cssObj });
 
   return cssObj;
 };
