@@ -1,4 +1,4 @@
-var CSSObjects = (function () {
+(function () {
   'use strict';
 
   var compose = function compose() {
@@ -54,7 +54,7 @@ var CSSObjects = (function () {
     });
   };
 
-  var defineProperty = function (obj, key, value) {
+  var defineProperty = function defineProperty(obj, key, value) {
     if (key in obj) {
       Object.defineProperty(obj, key, {
         value: value,
@@ -83,11 +83,11 @@ var CSSObjects = (function () {
     return target;
   };
 
-  var toConsumableArray = function (arr) {
+  var toConsumableArray = function toConsumableArray(arr) {
     if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }return arr2;
     } else {
       return Array.from(arr);
     }
@@ -181,12 +181,12 @@ var CSSObjects = (function () {
       index = Object.values(mainSheet.rules).findIndex(function (rule) {
         return rule.selectorText === "." + cssObj.class;
       });
-
-      deleteRule({ sheet: mainSheet.sheet, index: index });
-
+      if (index > -1) {
+        deleteRule({ sheet: mainSheet, index: index });
+      }
       insertRule({
         cssObj: cssObj,
-        sheet: mainSheet.sheet,
+        sheet: mainSheet,
         index: mainSheet.rules.length
       });
 
@@ -237,21 +237,22 @@ var CSSObjects = (function () {
       }
     },
     set: function set$$1(target, key, value) {
-      if (key === "rules") {
-        // Container.updateClass(Object.assign(target, { [key]: value }));
+      Container.updateClass(Object.assign(target, defineProperty({}, key, value)));
+      // if (key === "rules") {
+      //   // Container.updateClass(Object.assign(target, { [key]: value }));
 
-        var existingRules = target.rules.replace(/\s*/g, "").split(";");
-        var trimmedValues = value.replace(/\s*/g, "");
-        existingRules.forEach(function (style) {
-          // const regex = styleRegex(rule[0]);
-          console.group(style + ";");
-          trimmedValues.replace(style + ";", "");
-          console.groupEnd();
-        });
-        Container.updateClass(Object.assign(target, defineProperty({}, key, trimmedValues)));
-      } else {
-        Container.updateClass(Object.assign(target, defineProperty({}, key, value)));
-      }
+      //   let existingRules = target.rules.replace(/\s*/g, "").split(";");
+      //   let trimmedValues = value.replace(/\s*/g, "");
+      //   existingRules.forEach(style => {
+      //     // const regex = styleRegex(rule[0]);
+      //     console.group(`${style};`);
+      //     trimmedValues.replace(`${style};`, "");
+      //     console.groupEnd();
+      //   });
+      //   Container.updateClass(Object.assign(target, { [key]: trimmedValues }));
+      // } else {
+      //   Container.updateClass(Object.assign(target, { [key]: value }));
+      // }
       return true;
     }
   };
@@ -263,15 +264,17 @@ var CSSObjects = (function () {
         rules = _ref$rules === undefined ? {} : _ref$rules,
         _ref$media = _ref.media,
         media = _ref$media === undefined ? {} : _ref$media;
-    return Container.pushClass(new Proxy({
+
+    var cssObjectClass = new Proxy({
       name: name,
       scope: scope,
       rules: rules,
       media: media,
       class: scope ? scope + "__" + name : name
-    }, handler));
+    }, handler);
+    Container.pushClass(cssObjectClass);
+    return cssObjectClass;
   };
-
   var createInstance = function createInstance(styleObject) {
     return createClass$1(_extends({}, styleObject, {
       name: styleObject.name + "--" + generateUID()
@@ -283,6 +286,97 @@ var CSSObjects = (function () {
     instance: createInstance
   };
 
-  return CSSObjects;
+  var palette = {
+    green: function green(value) {
+      return "hsla(120, 100%, " + value / 10 + "%, 1)";
+    },
+    blue: function blue(value) {
+      return "hsla(240, 100%, " + value / 10 + "%, 1)";
+    },
+    yellow: function yellow(value) {
+      return "hsla(60, 100%, " + value / 10 + "%, 1)";
+    }
+  };
+
+  var colors = function colors(hue, value) {
+    if (!Object.keys(palette).includes(hue) || ![100, 200, 300, 400, 500, 600, 700, 800, 900].includes(value)) {
+      throw Error("The selected collor is not within your palette.");
+    }
+    return palette[hue](value);
+  };
+
+  var padded = "\n    width: 80%;\n    padding: 10%;\n";
+
+  var grid = "\n    display: flex;\n    flex-direction: column;\n   \n";
+
+  var row = "\n    justify-content: space-around;\n    display: flex;\n    flex-direction: row;\n    " + padded + "\n";
+
+  var col = function col(width) {
+      return "\n    display: flex;\n    flex-direction: column;\n    padding: 10% 0;\n    margin: 5%;\n    width: " + 10 * width + "%;\n";
+  };
+
+  var name = "el";
+  var scope = "demo";
+
+  var rules = "\n    background: " + colors("blue", 700) + ";\n    " + col(5) + "\n";
+  var media = {
+    "screen and (max-width:700px)": "\n    background: " + colors("blue", 500) + "\n  ",
+    "screen and (max-width:400px)": "\n    background: " + colors("blue", 300) + ";\n  "
+  };
+
+  var demo__el = CSSObjects.class({ name: name, scope: scope, rules: rules, media: media });
+
+  var name$1 = "row";
+  var scope$1 = "demo";
+  var rules$1 = "\n    background: " + colors("green", 700) + ";\n    " + row + "\n";
+
+  var media$1 = {
+    "screen and (max-width:700px)": "background: " + colors("green", 500) + ";",
+    "screen and (max-width:400px)": "background: " + colors("green", 300) + ";"
+  };
+
+  CSSObjects.class({ name: name$1, scope: scope$1, rules: rules$1, media: media$1 });
+
+  var name$2 = "container";
+  var scope$2 = "demo";
+
+  var rules$2 = "\n    height: 100vh;\n    width: 100vw;\n    justify-content: center;\n    padding: 0;\n    margin: 0;\n    overflow: hidden;\n    background-color: " + colors("yellow", 700) + ";\n    " + grid + "\n";
+
+  var media$2 = {
+    "screen and (max-width:700px)": "\n    background: " + colors("yellow", 500) + ";\n  ",
+    "screen and (max-width:400px)": "\n    background: " + colors("yellow", 300) + ";\n  "
+  };
+
+  CSSObjects.class({ name: name$2, scope: scope$2, rules: rules$2, media: media$2 });
+
+  // const demoEls = [].slice.call(document.querySelectorAll(`.${demo__el.class}`));
+
+  // const elStyleInstances = demoEls.map(el => {
+  //   const elInstance = CSSObjects.instance(demo__el);
+  //   el.classList.add(elInstance.class);
+  //   return elInstance;
+  // });
+
+  // let baseRotate = 0
+
+  // console.log(elStyleInstances)
+
+  demo__el.rules = "\n" + demo__el.rules + "\ntransform: rotateY(1deg)translateZ(124px);\nborder-radius: 100%;\nposition: absolute;\nbackground: none;\n";
+
+  // elStyleInstances.forEach( el => {
+  //     // console.log(el)
+  //     el.rules = `
+  //     transform: rotateY(${baseRotate += 15}deg)translateZ(124px);
+  //     border-radius: 100%;
+  //     position: absolute;
+  //     `
+  //     // rotate(el, el.rules);
+  // })
+
+
+  // const elements = [demo__container, demo__row, demo__el];
+  // const baseRules = [demo__container.rules, demo__row.rules, demo__el.rules];
+
+  // elements.forEach((el, i) => updateColors(el, baseRules[i]));
 
 }());

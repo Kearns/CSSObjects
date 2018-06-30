@@ -16,12 +16,12 @@ const updateClassToContainer = container => cssObj => {
   index = Object.values(mainSheet.rules).findIndex(
     rule => rule.selectorText === "." + cssObj.class
   );
-
-  deleteRule({ sheet: mainSheet.sheet, index });
-
+  if (index > -1) {
+    deleteRule({ sheet: mainSheet, index });
+  }
   insertRule({
     cssObj,
-    sheet: mainSheet.sheet,
+    sheet: mainSheet,
     index: mainSheet.rules.length
   });
 

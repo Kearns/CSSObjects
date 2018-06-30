@@ -1,3 +1,5 @@
+'use strict';
+
 var compose = function compose() {
   for (var _len = arguments.length, fns = Array(_len), _key = 0; _key < _len; _key++) {
     fns[_key] = arguments[_key];
@@ -178,12 +180,12 @@ var updateClassToContainer = function updateClassToContainer(container) {
     index = Object.values(mainSheet.rules).findIndex(function (rule) {
       return rule.selectorText === "." + cssObj.class;
     });
-
-    deleteRule({ sheet: mainSheet.sheet, index: index });
-
+    if (index > -1) {
+      deleteRule({ sheet: mainSheet, index: index });
+    }
     insertRule({
       cssObj: cssObj,
-      sheet: mainSheet.sheet,
+      sheet: mainSheet,
       index: mainSheet.rules.length
     });
 
@@ -234,21 +236,22 @@ var handler = {
     }
   },
   set: function set$$1(target, key, value) {
-    if (key === "rules") {
-      // Container.updateClass(Object.assign(target, { [key]: value }));
+    Container.updateClass(Object.assign(target, defineProperty({}, key, value)));
+    // if (key === "rules") {
+    //   // Container.updateClass(Object.assign(target, { [key]: value }));
 
-      var existingRules = target.rules.replace(/\s*/g, "").split(";");
-      var trimmedValues = value.replace(/\s*/g, "");
-      existingRules.forEach(function (style) {
-        // const regex = styleRegex(rule[0]);
-        console.group(style + ";");
-        trimmedValues.replace(style + ";", "");
-        console.groupEnd();
-      });
-      Container.updateClass(Object.assign(target, defineProperty({}, key, trimmedValues)));
-    } else {
-      Container.updateClass(Object.assign(target, defineProperty({}, key, value)));
-    }
+    //   let existingRules = target.rules.replace(/\s*/g, "").split(";");
+    //   let trimmedValues = value.replace(/\s*/g, "");
+    //   existingRules.forEach(style => {
+    //     // const regex = styleRegex(rule[0]);
+    //     console.group(`${style};`);
+    //     trimmedValues.replace(`${style};`, "");
+    //     console.groupEnd();
+    //   });
+    //   Container.updateClass(Object.assign(target, { [key]: trimmedValues }));
+    // } else {
+    //   Container.updateClass(Object.assign(target, { [key]: value }));
+    // }
     return true;
   }
 };
@@ -260,15 +263,17 @@ var createClass$1 = function createClass$$1(_ref) {
       rules = _ref$rules === undefined ? {} : _ref$rules,
       _ref$media = _ref.media,
       media = _ref$media === undefined ? {} : _ref$media;
-  return Container.pushClass(new Proxy({
+
+  var cssObjectClass = new Proxy({
     name: name,
     scope: scope,
     rules: rules,
     media: media,
     class: scope ? scope + "__" + name : name
-  }, handler));
+  }, handler);
+  Container.pushClass(cssObjectClass);
+  return cssObjectClass;
 };
-
 var createInstance = function createInstance(styleObject) {
   return createClass$1(_extends({}, styleObject, {
     name: styleObject.name + "--" + generateUID()
@@ -280,4 +285,4 @@ var CSSObjects = {
   instance: createInstance
 };
 
-export default CSSObjects;
+module.exports = CSSObjects;

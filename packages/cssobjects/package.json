@@ -1,0 +1,30 @@
+{
+  "name": "cssobjects",
+  "version": "0.0.3",
+  "description": "Sane CSS",
+  "main": "build/index.es.js",
+  "module": "build/index.es.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "build:watch": "rollup -c ./rollup.config.js --watch",
+    "demo": "rollup -c ./rollup.demo.config.js",
+    "demo:watch": "rollup -c ./rollup.demo.config.js --watch",
+    "develop": "concurrently --kill-others \"npm run build:watch\" \"npm run demo:watch\""
+  },
+  "author": "Patrick Kearns",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "concurrently": "^3.5.1",
+    "rollup": "^0.60.7",
+    "rollup-plugin-babel": "^3.0.4",
+    "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-postcss": "^1.6.2"
+  }
+}
