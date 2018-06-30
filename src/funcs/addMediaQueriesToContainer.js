@@ -4,6 +4,9 @@
  * @param {Object} cssObj
  *
  */
+
+import { insertRule } from "../utils/sheetFns";
+
 const addMediaQueriesToContainer = container => cssObj => {
   if (Object.keys(cssObj.media).length === 0 || cssObj.media.length === 0) {
     return null;
@@ -24,17 +27,7 @@ const addMediaQueriesToContainer = container => cssObj => {
       document.head.appendChild(mediaSheet);
     }
 
-    if (Array.isArray(cssObj.media[mediaQuery])) {
-      mediaSheet.sheet.insertRule(
-        `.${cssObj.class} { ${cssObj.media[mediaQuery].join(";")}`.replace(/\s*/g, ""),
-        0
-      );
-    } else if (typeof cssObj.media[mediaQuery] === "string") {
-      mediaSheet.sheet.insertRule(
-        `.${cssObj.class}{${cssObj.media[mediaQuery]}}`.replace(/\s*/g, ""),
-        0
-      );
-    }
+    insertRule(mediaSheet.sheet, cssObj, { mediaQuery });
   });
 };
 

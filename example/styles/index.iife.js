@@ -1,12 +1,6 @@
 (function () {
   'use strict';
 
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  };
-
   var compose = function compose() {
     for (var _len = arguments.length, fns = Array(_len), _key = 0; _key < _len; _key++) {
       fns[_key] = arguments[_key];
@@ -24,13 +18,22 @@
   var MAIN_SHEET_ID = "STYLISH_MAIN_" + Math.floor(Math.random() * 16);
   var KEYFRAME_SHEET_ID = "STYLISH_KEYFRAME_" + Math.floor(Math.random() * 16) + ";";
 
-  var _typeof$1 = typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol" ? function (obj) {
-    return typeof obj === "undefined" ? "undefined" : _typeof(obj);
-  } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
+  var insertRule = function insertRule(sheet, styleObj, _ref) {
+    var mediaQuery = _ref.mediaQuery,
+        _ref$index = _ref.index,
+        index = _ref$index === undefined ? 0 : _ref$index;
+
+    var rules = mediaQuery ? styleObj.media[mediaQuery] : styleObj.rules;
+    return sheet.insertRule(("." + styleObj.class + "{" + rules + "}").replace(/\s*/g, ""), index);
   };
 
-  var defineProperty$1 = function defineProperty$$1(obj, key, value) {
+  var deleteRule = function deleteRule(sheet, _ref2) {
+    var index = _ref2.index;
+
+    return sheet.deleteRule(index);
+  };
+
+  var defineProperty = function defineProperty(obj, key, value) {
     if (key in obj) {
       Object.defineProperty(obj, key, {
         value: value,
@@ -45,7 +48,7 @@
     return obj;
   };
 
-  var _extends$1 = Object.assign || function (target) {
+  var _extends = Object.assign || function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
 
@@ -59,7 +62,7 @@
     return target;
   };
 
-  var toConsumableArray$1 = function toConsumableArray$$1(arr) {
+  var toConsumableArray = function toConsumableArray(arr) {
     if (Array.isArray(arr)) {
       for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
         arr2[i] = arr[i];
@@ -81,20 +84,15 @@
       if (container.classes[cssObj.scope].includes(cssObj.class)) {
         throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
       }
-      container.classes[cssObj.scope] = [].concat(toConsumableArray$1(container.classes[cssObj.scope]), [cssObj.className]);
+
+      container.classes[cssObj.scope] = [].concat(toConsumableArray(container.classes[cssObj.scope]), [cssObj.className]);
+
       var mainSheet = container.sheets.find(function (sheet) {
         return sheet.id === MAIN_SHEET_ID;
       });
-      if (Array.isArray(cssObj.rules)) {
-        mainSheet.sheet.insertRule(("." + cssObj.class + " { " + cssObj.rules.join(";") + " }").replace(/\s*/g, ""), 0);
-      } else if (typeof cssObj.rules === "string") {
-        console.log(("." + cssObj.class + "{" + cssObj.rules + "}").replace(/\s*/g, ""));
-        mainSheet.sheet.insertRule(("." + cssObj.class + "{" + cssObj.rules + "}").replace(/\s*/g, ""), 0);
-      } else if (_typeof$1(cssObj.rules) === "object") {
-        mainSheet.sheet.insertRule("." + cssObj.class + " { \n          " + Object.keys(cssObj.rules).map(function (key) {
-          return key + ": " + cssObj.rules[key];
-        }).join(";").replace(/\s*/g, "") + "\n        }");
-      }
+
+      insertRule(mainSheet.sheet, cssObj);
+
       return cssObj;
     };
   };
@@ -122,6 +120,7 @@
    * @param {Object} cssObj
    *
    */
+
   var addMediaQueriesToContainer = function addMediaQueriesToContainer(container) {
     return function (cssObj) {
       if (Object.keys(cssObj.media).length === 0 || cssObj.media.length === 0) {
@@ -137,15 +136,11 @@
         if (mediaSheet === undefined) {
           mediaSheet = document.createElement("style");
           mediaSheet.media = mediaQuery;
-          container.sheets = [mediaSheet].concat(toConsumableArray$1(container.sheets));
+          container.sheets = [mediaSheet].concat(toConsumableArray(container.sheets));
           document.head.appendChild(mediaSheet);
         }
 
-        if (Array.isArray(cssObj.media[mediaQuery])) {
-          mediaSheet.sheet.insertRule(("." + cssObj.class + " { " + cssObj.media[mediaQuery].join(";")).replace(/\s*/g, ""), 0);
-        } else if (typeof cssObj.media[mediaQuery] === "string") {
-          mediaSheet.sheet.insertRule(("." + cssObj.class + "{" + cssObj.media[mediaQuery] + "}").replace(/\s*/g, ""), 0);
-        }
+        insertRule(mediaSheet.sheet, cssObj, { mediaQuery: mediaQuery });
       });
     };
   };
@@ -156,26 +151,33 @@
    * @param {Object} cssObj
    *
    */
+
   var updateClassToContainer = function updateClassToContainer(container) {
     return function (cssObj) {
       var mainSheet = container.sheets.find(function (sheet) {
         return sheet.id === MAIN_SHEET_ID;
-      }).sheet;
+      });
       var index = -1;
+
       index = Object.values(mainSheet.rules).findIndex(function (rule) {
         return rule.selectorText === "." + cssObj.class;
       });
 
-      mainSheet.deleteRule(index);
-      mainSheet.insertRule(("." + cssObj.class + "{" + cssObj.rules + "}").replace(/\s*/g, ""), mainSheet.rules.length);
+      deleteRule(mainSheet.sheet, { index: index });
+      insertRule(mainSheet.sheet, cssObj, {
+        index: mainSheet.rules.length
+      });
+
       return cssObj;
     };
   };
 
   var mainSheet = document.createElement("style");
   var keyframeSheet = document.createElement("style");
+
   mainSheet.id = MAIN_SHEET_ID;
   keyframeSheet.id = KEYFRAME_SHEET_ID;
+
   document.head.appendChild(mainSheet);
   document.head.appendChild(keyframeSheet);
 
@@ -193,14 +195,14 @@
     return compose(updateClassToContainer(Container))(cssObj);
   };
 
-  var generateUUID = function generateUUID() {
+  var generateUID = function generateUID() {
     var d = new Date().getTime();
-    var uuid = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(/[x]/g, function (c) {
+    var uid = "xxxx-xxxx-xxxx".replace(/[x]/g, function (c) {
       var r = (d + Math.random() * 16) % 16 | 0;
       d = Math.floor(d / 16);
       return (c == "x" ? r : r & 0x3 | 0x8).toString(16);
     });
-    return uuid;
+    return uid;
   };
 
   // const styleRegex = style => `/[\w\s]*:[\w\s]*;/g`;
@@ -216,21 +218,21 @@
       }
     },
     set: function set$$1(target, key, value) {
-      // if (key === "rules") {
-      //   Container.updateClass(Object.assign(target, { [key]: value }));
+      if (key === "rules") {
+        // Container.updateClass(Object.assign(target, { [key]: value }));
 
-      //   let newRules = value.replace(/\s*/g, "").split(";");
-      //   let rules = target.rules;
-
-      //   newRules.forEach(style => {
-      //     const rule = style.split(":");
-      //     const regex = styleRegex(rule[0]);
-      //     console.log(rules.replace(regex));
-      //   });
-
-      //   Container.updateClass(Object.assign(target, { [key]: value }));
-      // } else 
-      Container.updateClass(Object.assign(target, defineProperty$1({}, key, value)));
+        var existingRules = target.rules.replace(/\s*/g, "").split(";");
+        var trimmedValues = value.replace(/\s*/g, "");
+        existingRules.forEach(function (style) {
+          // const regex = styleRegex(rule[0]);
+          console.group(style + ";");
+          trimmedValues.replace(style + ";", '');
+          console.groupEnd();
+        });
+        Container.updateClass(Object.assign(target, defineProperty({}, key, trimmedValues)));
+      } else {
+        Container.updateClass(Object.assign(target, defineProperty({}, key, value)));
+      }
       return true;
     }
   };
@@ -261,8 +263,8 @@
   };
 
   var createInstance = function createInstance(styleObject) {
-    return createClass$1(_extends$1({}, styleObject, {
-      name: styleObject.name + "--" + generateUUID()
+    return createClass$1(_extends({}, styleObject, {
+      name: styleObject.name + "--" + generateUID()
     }));
   };
 
@@ -334,23 +336,30 @@
 
   Stylish.class({ name: name$2, scope: scope$2, rules: rules$2, media: media$2 });
 
-  var demoEls = [].slice.call(document.querySelectorAll("." + demo__el.class));
+  // const demoEls = [].slice.call(document.querySelectorAll(`.${demo__el.class}`));
 
-  var elStyleInstances = demoEls.map(function (el) {
-    var elInstance = Stylish.instance(demo__el);
-    el.classList.add(elInstance.class);
-    return elInstance;
-  });
+  // const elStyleInstances = demoEls.map(el => {
+  //   const elInstance = Stylish.instance(demo__el);
+  //   el.classList.add(elInstance.class);
+  //   return elInstance;
+  // });
 
-  var baseRotate = 0;
+  // let baseRotate = 0
 
   // console.log(elStyleInstances)
 
-  elStyleInstances.forEach(function (el) {
-    // console.log(el)
-    el.rules = "\n    " + el.rules + "\n    transform: rotateY(" + (baseRotate += 15) + "deg)translateZ(124px);\n    border-radius: 100%;\n    position: absolute;\n    background: none;\n    border: 5px solid blue;\n    ";
-    // rotate(el, el.rules);
-  });
+  demo__el.rules = "\n" + demo__el.rules + "\ntransform: rotateY(1deg)translateZ(124px);\nborder-radius: 100%;\nposition: absolute;\nbackground: none;\n";
+
+  // elStyleInstances.forEach( el => {
+  //     // console.log(el)
+  //     el.rules = `
+  //     transform: rotateY(${baseRotate += 15}deg)translateZ(124px);
+  //     border-radius: 100%;
+  //     position: absolute;
+  //     `
+  //     // rotate(el, el.rules);
+  // })
+
 
   // const elements = [demo__container, demo__row, demo__el];
   // const baseRules = [demo__container.rules, demo__row.rules, demo__el.rules];

@@ -45,31 +45,36 @@ const updateColors = (el, baseRules) => {
   window.requestAnimationFrame(step);
 };
 
-const demoEls = [].slice.call(document.querySelectorAll(`.${demo__el.class}`));
+// const demoEls = [].slice.call(document.querySelectorAll(`.${demo__el.class}`));
 
-const elStyleInstances = demoEls.map(el => {
-  const elInstance = Stylish.instance(demo__el);
-  el.classList.add(elInstance.class);
-  return elInstance;
-});
+// const elStyleInstances = demoEls.map(el => {
+//   const elInstance = Stylish.instance(demo__el);
+//   el.classList.add(elInstance.class);
+//   return elInstance;
+// });
 
-let baseRotate = 0
+// let baseRotate = 0
 
 // console.log(elStyleInstances)
 
-elStyleInstances.forEach( el => {
-    // console.log(el)
-    el.rules = `
-    ${el.rules}
-    transform: rotateY(${baseRotate += 15}deg)translateZ(124px);
-    border-radius: 100%;
-    position: absolute;
-    background: none;
-    border: 5px solid blue;
-    `
-    // rotate(el, el.rules);
+demo__el.rules = `
+${demo__el.rules}
+transform: rotateY(1deg)translateZ(124px);
+border-radius: 100%;
+position: absolute;
+background: none;
+`
 
-})
+
+// elStyleInstances.forEach( el => {
+//     // console.log(el)
+//     el.rules = `
+//     transform: rotateY(${baseRotate += 15}deg)translateZ(124px);
+//     border-radius: 100%;
+//     position: absolute;
+//     `
+//     // rotate(el, el.rules);
+// })
 
 
 // const elements = [demo__container, demo__row, demo__el];

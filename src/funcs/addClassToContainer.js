@@ -1,5 +1,5 @@
 import { MAIN_SHEET_ID } from "../constants";
-
+import { insertRule } from "../utils/sheetFns";
 /**
  * adds class to container
  * @param {Object} container
@@ -13,32 +13,16 @@ const addClassToContainer = container => cssObj => {
       `ERROR: class "${cssObj.name}" already exists in scope "${cssObj.scope}"`
     );
   }
+
   container.classes[cssObj.scope] = [
     ...container.classes[cssObj.scope],
     cssObj.className
   ];
+
   const mainSheet = container.sheets.find(sheet => sheet.id === MAIN_SHEET_ID);
-  if (Array.isArray(cssObj.rules)) {
-    mainSheet.sheet.insertRule(
-      `.${cssObj.class} { ${cssObj.rules.join(";")} }`.replace(/\s*/g, ""),
-      0
-    );
-  } else if (typeof cssObj.rules === "string") {
-    console.log(`.${cssObj.class}{${cssObj.rules}}`.replace(/\s*/g, ""));
-    mainSheet.sheet.insertRule(
-      `.${cssObj.class}{${cssObj.rules}}`.replace(/\s*/g, ""),
-      0
-    );
-  } else if (typeof cssObj.rules === "object") {
-    mainSheet.sheet.insertRule(
-      `.${cssObj.class} { 
-          ${Object.keys(cssObj.rules)
-            .map(key => `${key}: ${cssObj.rules[key]}`)
-            .join(";")
-            .replace(/\s*/g, "")}
-        }`
-    );
-  }
+
+  insertRule(mainSheet.sheet, cssObj);
+
   return cssObj;
 };
 
