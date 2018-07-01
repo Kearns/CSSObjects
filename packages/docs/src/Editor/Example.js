@@ -2,7 +2,11 @@ const Example = rules => `
 const css = oocss.class({
     name: "editor",
     scope: "demo",
-    rules: \`\n${rules}\`
+    rules: \`
+        font-family: 'Comfortaa', sans-serif; 
+        margin: 0; 
+        padding: 10px; 
+        color:white;\`
 });
 
 const Editor = props => <div className={css.class}>Editor</div>
