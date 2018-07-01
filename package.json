@@ -3,6 +3,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "homepage": "https://kearns.github.io/CSSObjects/",
   "scripts": {
     "compile": "lerna run compile",
     "clean": "lerna run clean",
