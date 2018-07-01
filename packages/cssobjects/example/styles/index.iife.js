@@ -101,18 +101,22 @@
    */
   var addClassToContainer = function addClassToContainer(container) {
     return function (cssObj) {
-      // ensure that if the scope already exists, that there is no existing class within that scope to collide with
-      if (container.classes[cssObj.scope].includes(cssObj.class)) {
-        throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
+      try {
+        // ensure that if the scope already exists, that there is no existing class within that scope to collide with
+        if (container.classes[cssObj.scope].includes(cssObj.class)) {
+          throw Error("ERROR: class \"" + cssObj.name + "\" already exists in scope \"" + cssObj.scope + "\"");
+        }
+
+        container.classes[cssObj.scope] = [].concat(toConsumableArray(container.classes[cssObj.scope]), [cssObj.className]);
+
+        var sheet = findSheet({ container: container, id: MAIN_SHEET_ID }).sheet;
+
+        insertRule({ sheet: sheet, cssObj: cssObj });
+
+        return cssObj;
+      } catch (err) {
+        console.error(err);
       }
-
-      container.classes[cssObj.scope] = [].concat(toConsumableArray(container.classes[cssObj.scope]), [cssObj.className]);
-
-      var sheet = findSheet({ container: container, id: MAIN_SHEET_ID }).sheet;
-
-      insertRule({ sheet: sheet, cssObj: cssObj });
-
-      return cssObj;
     };
   };
 
@@ -219,8 +223,12 @@
   };
 
   var invariant = function invariant(key, action) {
-    if (key[0] === "_") {
-      throw new Error("Invalid attempt to " + action + " private \"" + key + "\" property");
+    try {
+      if (key[0] === "_") {
+        throw new Error("Invalid attempt to " + action + " private \"" + key + "\" property");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 

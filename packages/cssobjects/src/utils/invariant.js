@@ -1,6 +1,10 @@
 const invariant = (key, action) => {
-  if (key[0] === "_") {
-    throw new Error(`Invalid attempt to ${action} private "${key}" property`);
+  try {
+    if (key[0] === "_") {
+      throw new Error(`Invalid attempt to ${action} private "${key}" property`);
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
