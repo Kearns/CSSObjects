@@ -1,19 +1,14 @@
 import React from "react";
 import oocss from "cssobjects";
-import { textColor } from "../StyleGlobals";
+import { textColor, container } from "../StyleGlobals";
 
 const HeaderContainer = props => {
-  const css = oocss.class({
-    name: "container",
-    scope: "header",
-    rules: `
-        background: black;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    `
-  });
+  const css = oocss.instance(container);
+  css.rules = `
+    ${css.rules} 
+    justify-content: center;
+    align-items: center;
+  `;
   return <header className={css.class}>{props.children}</header>;
 };
 
